@@ -67,8 +67,8 @@ WSGI_APPLICATION = 'Django_Project_K.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'project_k_db',
-        'USER': 'project_k_user',
+        'NAME': 'project-k-db',
+        'USER': 'projectКУser',
         'PASSWORD': 'project_k_password',
         'HOST': 'localhost',
         'PORT': '5433',
