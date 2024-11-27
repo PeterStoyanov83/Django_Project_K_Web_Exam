@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - Project K{% endblock %}
+
+{% block content %}
+  <h1>My Profile</h1>
+  <form method="post">
+    {% csrf_token %}
+    <h2>User Information</h2>
+    {{ user_form.as_p }}
+    <h2>Client Information</h2>
+    {{ client_form.as_p }}
+    <button type="submit">Update Profile</button>
+  </form>
+  <div style="margin-top: 2rem;">
+    <h2>Client Details</h2>
+    <p><strong>Username:</strong> {{ client.user.username }}</p>
+    <p><strong>Company Name:</strong> {{ client.company_name }}</p>
+    <p><strong>Contact Person:</strong> {{ client.contact_person }}</p>
+    <p><strong>Phone Number:</strong> {{ client.phone_number }}</p>
+    <p><strong>Address:</strong> {{ client.address }}</p>
+    <p><strong>Registration Date:</strong> {{ client.registration_date }}</p>
+  </div>
+{% endblock %}
+

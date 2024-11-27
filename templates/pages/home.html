@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Project K{% endblock %}
+
+{% block content %}
+    <h1>Welcome to Project K</h1>
+    <p>Expand your knowledge with our interactive learning platform.</p>
+    
+    <h2>Featured Courses</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+        {% for course in featured_courses %}
+            <div style="border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem;">
+                <h3>{{ course.name }}</h3>
+                <p>{{ course.description }}</p>
+                <a href="{% url 'course_management:course_list' %}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 0.5rem 1rem; text-decoration: none; border-radius: 0.25rem;">Learn More</a>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+

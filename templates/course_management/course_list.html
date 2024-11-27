@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Courses - Project K{% endblock %}
+
+{% block content %}
+    <h1>Our Courses</h1>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+        {% for course in courses %}
+            <div style="border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem;">
+                <h2>{{ course.name }}</h2>
+                <p>{{ course.description }}</p>
+                <p><strong>Platform:</strong> {{ course.get_platform_display }}</p>
+                <a href="#" style="display: inline-block; background-color: #3b82f6; color: white; padding: 0.5rem 1rem; text-decoration: none; border-radius: 0.25rem;">View Course</a>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+

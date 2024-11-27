@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - Project K{% endblock %}
+
+{% block content %}
+    <h1>My Profile</h1>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+        <div style="border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem;">
+            <h2>Personal Information</h2>
+            <p><strong>Name:</strong> {{ client.user.get_full_name }}</p>
+            <p><strong>Email:</strong> {{ client.user.email }}</p>
+            <p><strong>Location:</strong> {{ client.location }}</p>
+            <p><strong>Agreement Status:</strong> {% if client.agreement_status %}Active{% else %}Inactive{% endif %}</p>
+        </div>
+        <div style="border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem;">
+            <h2>Enrolled Courses</h2>
+            <ul>
+                {% for course in client.course_set.all %}
+                    <li>{{ course.name }} ({{ course.get_platform_display }})</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div style="border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem;">
+            <h2>Assigned Laptops</h2>
+            {% for laptop in client.laptop_set.all %}
+                <div style="margin-bottom: 1rem;">
+                    <p><strong>Identifier:</strong> {{ laptop.identifier }}</p>
+                    <p><strong>Assigned Date:</strong> {{ laptop.assigned_date }}</p>
+                    <p><strong>Return Date:</strong> {{ laptop.return_date }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+

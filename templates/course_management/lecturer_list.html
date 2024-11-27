@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Lecturers - Project K{% endblock %}
+
+{% block content %}
+    <h1>Our Lecturers</h1>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        {% for lecturer in lecturers %}
+            <div style="border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; text-align: center;">
+                <img src="{{ lecturer.profile_picture.url }}" alt="{{ lecturer.get_full_name }}" style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 0.5rem;">
+                <h2>{{ lecturer.get_full_name }}</h2>
+                <p>{{ lecturer.specialization }}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+

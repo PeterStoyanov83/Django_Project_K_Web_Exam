@@ -1,17 +1,17 @@
-version: '3.9'
+version: '3.8'
 
 services:
   db:
-    image: postgres:latest
+    image: postgres:13
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=project-k-db
-      - POSTGRES_USER=projectKUser
-      - POSTGRES_PASSWORD=STr0ngP@ass0rd
-      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_DB=project_k_db
+      - POSTGRES_USER=project_k_user
+      - POSTGRES_PASSWORD=project_k_password
     ports:
       - "5432:5432"
 
 volumes:
   postgres_data:
+

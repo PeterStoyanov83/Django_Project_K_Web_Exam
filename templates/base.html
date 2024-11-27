@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Project K{% endblock %}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #3b82f6;
+            color: white;
+            padding: 1rem;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin-right: 1rem;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+        main {
+            flex: 1;
+            padding: 2rem;
+        }
+        footer {
+            background-color: #f3f4f6;
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Project K</h1>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'pages:home' %}">Home</a></li>
+                    <li><a href="{% url 'course_management:course_list' %}">Courses</a></li>
+                    <li><a href="{% url 'course_management:lecturer_list' %}">Lecturers</a></li>
+                    <li><a href="{% url 'pages:about' %}">About</a></li>
+                    <li><a href="{% url 'pages:contact' %}">Contact</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'client_management:profile' %}">Profile</a></li>
+                        <li><a href="{% url 'client_management:logout' %}">Logout</a></li>
+                    {% else %}
+                        <li><a href="{% url 'client_management:login' %}">Login</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Project K. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
+
