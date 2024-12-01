@@ -3,11 +3,21 @@ from course_management.models import Course
 
 def home(request):
     featured_courses = Course.objects.all()[:3]
-    return render(request, 'pages/home.html', {'featured_courses': featured_courses})
+    context = {
+        'featured_courses': featured_courses,
+        'page_title': 'Welcome to Project K'
+    }
+    return render(request, 'pages/home.html', context)
 
 def about(request):
-    return render(request, 'pages/about.html')
+    context = {
+        'page_title': 'About Us'
+    }
+    return render(request, 'pages/about.html', context)
 
 def contact(request):
-    return render(request, 'pages/contact.html')
+    context = {
+        'page_title': 'Contact Us'
+    }
+    return render(request, 'pages/contact.html', context)
 

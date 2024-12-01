@@ -3,12 +3,12 @@
 {% block title %}{{ action }} Laptop - Project K{% endblock %}
 
 {% block content %}
-<h1>{{ action }} Laptop</h1>
-<form method="post">
+  <h1>{{ action }} Laptop</h1>
+  <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">{{ action }} Laptop</button>
-</form>
-<a href="{% url 'client_management:laptop_list' %}">Back to Laptop List</a>
+  </form>
+  <a href="{% url 'client_management:laptop_list' %}">Back to Laptop List</a>
 {% endblock %}
 

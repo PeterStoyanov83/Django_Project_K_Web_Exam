@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}My Laptops - Project K{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">My Laptops</h1>
+    {% if laptops %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for laptop in laptops %}
+                <div class="bg-white shadow-md rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-2">{{ laptop.brand }} {{ laptop.model }}</h2>
+                    <p class="text-gray-600 mb-2">Serial: {{ laptop.serial_number }}</p>
+                    <p class="text-gray-600 mb-2">Status: {{ laptop.get_status_display }}</p>
+                    <p class="text-gray-600 mb-2">Purchase Date: {{ laptop.purchase_date }}</p>
+                    <p class="text-gray-600 mb-2">Warranty End: {{ laptop.warranty_end_date }}</p>
+                    <div class="mt-4">
+                        <a href="{% url 'client_management:laptop_update' laptop.pk %}" class="text-blue-500 hover:text-blue-700 mr-4">Edit</a>
+                        <a href="{% url 'client_management:laptop_delete' laptop.pk %}" class="text-red-500 hover:text-red-700">Delete</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-gray-600">You don't have any laptops registered yet.</p>
+    {% endif %}
+    <div class="mt-8">
+        <a href="{% url 'client_management:laptop_create' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Add New Laptop
+        </a>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>{{ course.title }}</h1>
+  <p>{{ course.description }}</p>
+  <p>Lecturer: {{ course.lecturer }}</p>
+  <p>Capacity: {{ course.capacity }}</p>
+  
+  <h2>Schedules</h2>
+  <a href="{% url 'schedule_create' course.pk %}">Add Schedule</a>
+  <ul>
+    {% for schedule in schedules %}
+      <li>
+        {{ schedule.date }} {{ schedule.time_slot }} - {{ schedule.room }}
+        <a href="{% url 'schedule_update' schedule.pk %}">Edit</a>
+        <a href="{% url 'schedule_delete' schedule.pk %}">Delete</a>
+      </li>
+    {% empty %}
+      <li>No schedules available.</li>
+    {% endfor %}
+  </ul>
+  
+  <a href="{% url 'course_update' course.pk %}">Edit Course</a>
+  <a href="{% url 'course_delete' course.pk %}">Delete Course</a>
+{% endblock %}
+

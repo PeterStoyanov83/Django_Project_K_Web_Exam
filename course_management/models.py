@@ -1,38 +1,77 @@
 from django.db import models
-from client_management.models import Client
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+from client_management.models import CustomUser
 
 class Course(models.Model):
-    PLATFORM_CHOICES = [
-        ('online', 'Online'),
-        ('in_person', 'In-Person'),
-        ('other', 'Other'),
-    ]
-
-    name = models.CharField(max_length=100)
+    title = models.CharField(max_length=200)
     description = models.TextField()
-    platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES)
-    clients = models.ManyToManyField(Client)
+    lecturer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='courses')
+    capacity = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.title
+
+class Room(models.Model):
+    name = models.CharField(max_length=50)
+    capacity = models.PositiveIntegerField()
 
     def __str__(self):
         return self.name
 
-class CourseSchedule(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    day_of_week = models.CharField(max_length=10)
-    time_slot = models.TimeField()
+class TimeSlot(models.Model):
+    DAY_CHOICES = [
+        ('MON', 'Monday'),
+        ('TUE', 'Tuesday'),
+        ('WED', 'Wednesday'),
+        ('THU', 'Thursday'),
+        ('FRI', 'Friday'),
+        ('SAT', 'Saturday'),
+        ('SUN', 'Sunday'),
+    ]
+    day = models.CharField(max_length=3, choices=DAY_CHOICES)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
 
     def __str__(self):
-        return f"{self.course.name} - {self.day_of_week} {self.time_slot}"
+        return f"{self.get_day_display()} {self.start_time.strftime('%H:%M')} - {self.end_time.strftime('%H:%M')}"
 
-class Resource(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    room = models.CharField(max_length=50)
-    seat = models.CharField(max_length=10)
+class CourseSchedule(models.Model):
+    STATUS_CHOICES = [
+        ('SCHEDULED', 'Scheduled'),
+        ('CANCELLED', 'Cancelled'),
+        ('COMPLETED', 'Completed'),
+    ]
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='schedules')
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    time_slot = models.ForeignKey(TimeSlot, on_delete=models.CASCADE)
+    date = models.DateField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='SCHEDULED')
 
     class Meta:
-        unique_together = ('course', 'room', 'seat')
+        unique_together = ['room', 'time_slot', 'date']
+
+    def clean(self):
+        if CourseSchedule.objects.filter(room=self.room, time_slot=self.time_slot, date=self.date).exclude(pk=self.pk).exists():
+            raise ValidationError('This room is already booked for the given time slot and date.')
+        if self.course.capacity > self.room.capacity:
+            raise ValidationError('The course capacity exceeds the room capacity.')
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.course.name} - {self.client.name} - Room: {self.room}, Seat: {self.seat}"
+        return f"{self.course.title} - {self.date} {self.time_slot}"
+
+class Booking(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bookings')
+    course_schedule = models.ForeignKey(CourseSchedule, on_delete=models.CASCADE, related_name='bookings')
+    booking_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ['user', 'course_schedule']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.course_schedule}"
 

@@ -5,12 +5,18 @@ services:
     image: postgres:13
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
     environment:
       - POSTGRES_DB=project_k_db
       - POSTGRES_USER=project_k_user
       - POSTGRES_PASSWORD=project_k_password
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U project_k_user -d project_k_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:

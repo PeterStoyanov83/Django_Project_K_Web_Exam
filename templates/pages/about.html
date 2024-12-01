@@ -1,18 +1,15 @@
 {% extends 'base.html' %}
 
-{% block title %}About - Project K{% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
 
 {% block content %}
-    <h1>About Project K</h1>
-    <p>Project K is a cutting-edge learning platform dedicated to providing high-quality education in IT and business fields.</p>
-    
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
-        <div style="border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem;">
-            <h2>Our Mission</h2>
-            <p>We aim to empower individuals with practical skills and knowledge, preparing them for the challenges of the modern workplace.</p>
-        </div>
-        <div style="border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem;">
-            <h2>Our Approach</h2>
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-6">{{ page_title }}</h1>
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <p class="text-lg mb-4">Project K is a cutting-edge learning platform dedicated to providing high-quality education in IT and business fields.</p>
+            <h2 class="text-2xl font-semibold mb-2">Our Mission</h2>
+            <p class="mb-4">We aim to empower individuals with practical skills and knowledge, preparing them for the challenges of the modern workplace.</p>
+            <h2 class="text-2xl font-semibold mb-2">Our Approach</h2>
             <p>We believe in hands-on learning and real-world application. Our courses are designed to be interactive and engaging, combining theoretical knowledge with practical exercises and projects.</p>
         </div>
     </div>
