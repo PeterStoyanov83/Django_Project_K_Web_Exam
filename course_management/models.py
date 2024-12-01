@@ -1,6 +1,5 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.utils import timezone
 from client_management.models import CustomUser
 
 class Course(models.Model):
@@ -75,3 +74,15 @@ class Booking(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.course_schedule}"
 
+class CourseApplication(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='course_applications')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='applications')
+    status = models.CharField(max_length=20, choices=[
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected')
+    ], default='pending')
+    application_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.course.title} ({self.status})"

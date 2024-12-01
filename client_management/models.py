@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 import os
 
+
 class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=15, blank=True)
     address = models.TextField(blank=True)
@@ -10,6 +11,7 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+
 
 class Client(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
@@ -20,8 +22,10 @@ class Client(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.company_name}"
 
+
 def client_file_path(instance, filename):
     return f'client_files/{instance.client.user.username}_{filename}'
+
 
 class ClientFile(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='files')
@@ -38,6 +42,7 @@ class ClientFile(models.Model):
     @property
     def file_type(self):
         return self.file_name.split('.')[-1] if '.' in self.file_name else ''
+
 
 class Laptop(models.Model):
     STATUS_CHOICES = [
@@ -57,3 +62,14 @@ class Laptop(models.Model):
     def __str__(self):
         return f"{self.brand} {self.model} - {self.client.user.username}"
 
+
+class CourseApplication(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    course = models.ForeignKey('course_management.Course', on_delete=models.CASCADE)
+    status = models.CharField(max_length=20,
+                              choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')],
+                              default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.course.title}"

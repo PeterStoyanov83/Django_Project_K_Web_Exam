@@ -4,7 +4,7 @@ from . import views
 app_name = 'course_management'
 
 urlpatterns = [
-    path('courses', views.course_list, name='course_list'),
+    path('', views.course_list, name='course_list'),
     path('create/', views.course_create, name='course_create'),
     path('<int:pk>/', views.course_detail, name='course_detail'),
     path('<int:pk>/update/', views.course_update, name='course_update'),
@@ -16,3 +16,6 @@ urlpatterns = [
     path('bookings/', views.booking_list, name='booking_list'),
     path('bookings/<int:pk>/cancel/', views.booking_cancel, name='booking_cancel'),
 ]
+
+
+

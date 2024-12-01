@@ -12,8 +12,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-# Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -21,9 +19,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'pages.apps.PagesConfig',
-    'client_management.apps.ClientManagementConfig',
-    'course_management.apps.CourseManagementConfig',
+    'pages',
+    'client_management',
+    'course_management',
 ]
 
 MIDDLEWARE = [
@@ -107,3 +105,4 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'peterstoyanov83@gmail.com'  # Your email address
 EMAIL_HOST_PASSWORD = 'Peterko123123new'  # Your email password or app password
 DEFAULT_FROM_EMAIL = 'Peterko123123new'
+

@@ -8,11 +8,6 @@ def course_list(request):
     courses = Course.objects.all()
     return render(request, 'course_management/course_list.html', {'courses': courses})
 
-def course_detail(request, pk):
-    course = get_object_or_404(Course, pk=pk)
-    schedules = course.schedules.all()
-    return render(request, 'course_management/course_detail.html', {'course': course, 'schedules': schedules})
-
 @login_required
 def course_create(request):
     if request.method == 'POST':
@@ -25,7 +20,16 @@ def course_create(request):
             return redirect('course_management:course_detail', pk=course.pk)
     else:
         form = CourseForm()
-    return render(request, 'course_management/course_form.html', {'form': form, 'action': 'create'})
+    return render(request, 'course_management/course_form.html', {'form': form, 'action': 'Create'})
+
+def course_detail(request, pk):
+    course = get_object_or_404(Course, pk=pk)
+    schedules = course.schedules.all()
+    context = {
+        'course': course,
+        'schedules': schedules,
+    }
+    return render(request, 'course_management/course_detail.html', context)
 
 @login_required
 def course_update(request, pk):

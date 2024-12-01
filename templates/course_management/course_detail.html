@@ -1,26 +1,47 @@
 {% extends 'base.html' %}
 
+{% block title %}{{ course.title }} - Project K{% endblock %}
+
 {% block content %}
-  <h1>{{ course.title }}</h1>
-  <p>{{ course.description }}</p>
-  <p>Lecturer: {{ course.lecturer }}</p>
-  <p>Capacity: {{ course.capacity }}</p>
-  
-  <h2>Schedules</h2>
-  <a href="{% url 'schedule_create' course.pk %}">Add Schedule</a>
-  <ul>
-    {% for schedule in schedules %}
-      <li>
-        {{ schedule.date }} {{ schedule.time_slot }} - {{ schedule.room }}
-        <a href="{% url 'schedule_update' schedule.pk %}">Edit</a>
-        <a href="{% url 'schedule_delete' schedule.pk %}">Delete</a>
-      </li>
-    {% empty %}
-      <li>No schedules available.</li>
-    {% endfor %}
-  </ul>
-  
-  <a href="{% url 'course_update' course.pk %}">Edit Course</a>
-  <a href="{% url 'course_delete' course.pk %}">Delete Course</a>
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <div class="p-6">
+            <h1 class="text-3xl font-bold mb-4">{{ course.title }}</h1>
+            <p class="text-gray-600 mb-4">{{ course.description }}</p>
+            <div class="mb-4">
+                <strong class="text-gray-700">Lecturer:</strong> {{ course.lecturer.get_full_name }}
+            </div>
+            <div class="mb-4">
+                <strong class="text-gray-700">Capacity:</strong> {{ course.capacity }} students
+            </div>
+        </div>
+
+        <div class="bg-gray-100 p-6">
+            <h2 class="text-2xl font-bold mb-4">Course Schedules</h2>
+            {% if schedules %}
+                <div class="grid gap-4">
+                    {% for schedule in schedules %}
+                        <div class="bg-white p-4 rounded-md shadow">
+                            <p class="font-semibold">{{ schedule.date|date:"F d, Y" }} - {{ schedule.time_slot }}</p>
+                            <p>Room: {{ schedule.room.name }}</p>
+                            <p>Status: {{ schedule.get_status_display }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-600">No schedules available for this course.</p>
+            {% endif %}
+        </div>
+
+        <div class="p-6 bg-gray-50 border-t">
+            <a href="{% url 'course_management:course_update' course.pk %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
+                Edit Course
+            </a>
+            <a href="{% url 'course_management:course_delete' course.pk %}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                Delete Course
+            </a>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
