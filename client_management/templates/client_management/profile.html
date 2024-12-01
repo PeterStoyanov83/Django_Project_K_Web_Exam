@@ -3,23 +3,142 @@
 {% block title %}My Profile - Project K{% endblock %}
 
 {% block content %}
-  <h1>My Profile</h1>
-  <form method="post">
-    {% csrf_token %}
-    <h2>User Information</h2>
-    {{ user_form.as_p }}
-    <h2>Client Information</h2>
-    {{ client_form.as_p }}
-    <button type="submit">Update Profile</button>
-  </form>
-  <div style="margin-top: 2rem;">
-    <h2>Client Details</h2>
-    <p><strong>Username:</strong> {{ client.user.username }}</p>
-    <p><strong>Company Name:</strong> {{ client.company_name }}</p>
-    <p><strong>Contact Person:</strong> {{ client.contact_person }}</p>
-    <p><strong>Phone Number:</strong> {{ client.phone_number }}</p>
-    <p><strong>Address:</strong> {{ client.address }}</p>
-    <p><strong>Registration Date:</strong> {{ client.registration_date }}</p>
-  </div>
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+            <!-- Profile Header -->
+            <div class="bg-blue-600 text-white p-6">
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Profile Picture"
+                                 class="w-24 h-24 rounded-full object-cover border-4 border-white">
+                        {% else %}
+                            <div class="w-24 h-24 rounded-full bg-blue-700 flex items-center justify-center border-4 border-white">
+                                <span class="text-3xl">{{ user.username|make_list|first|upper }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">{{ user.username }}</h1>
+                        <p class="text-blue-100">{{ user.client.company_name }}</p>
+                    </div>
+                    <a href="{% url 'client_management:profile_edit' %}"
+                       class="ml-auto bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors">
+                        Edit Profile
+                    </a>
+                </div>
+            </div>
+
+            <!-- Profile Content -->
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- User Information -->
+                    <div>
+                        <h2 class="text-xl font-semibold mb-4">User Information</h2>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-sm text-gray-600">Email</label>
+                                <p class="font-medium">{{ user.email }}</p>
+                            </div>
+                            <div>
+                                <label class="text-sm text-gray-600">Phone Number</label>
+                                <p class="font-medium">{{ user.phone_number|default:"Not provided" }}</p>
+                            </div>
+                            <div>
+                                <label class="text-sm text-gray-600">Address</label>
+                                <p class="font-medium">{{ user.address|default:"Not provided" }}</p>
+                            </div>
+                            <div>
+                                <label class="text-sm text-gray-600">Date of Birth</label>
+                                <p class="font-medium">{{ user.date_of_birth|date:"F d, Y"|default:"Not provided" }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Client Information -->
+                    <div>
+                        <h2 class="text-xl font-semibold mb-4">Client Information</h2>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-sm text-gray-600">Company Name</label>
+                                <p class="font-medium">{{ user.client.company_name }}</p>
+                            </div>
+                            <div>
+                                <label class="text-sm text-gray-600">Industry</label>
+                                <p class="font-medium">{{ user.client.industry }}</p>
+                            </div>
+                            <div>
+                                <label class="text-sm text-gray-600">Registration Date</label>
+                                <p class="font-medium">{{ user.client.registration_date|date:"F d, Y" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documents Section -->
+                <div class="mt-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold">Documents</h2>
+                        <button onclick="document.getElementById('uploadModal').classList.remove('hidden')"
+                                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            Upload Document
+                        </button>
+                    </div>
+
+                    {% if client_files %}
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {% for file in client_files %}
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="font-medium truncate">{{ file.file_name }}</p>
+                                            <p class="text-sm text-gray-600">{{ file.upload_date|date:"M d, Y" }}</p>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <a href="{{ file.file.url }}" target="_blank"
+                                               class="text-blue-600 hover:text-blue-800">
+                                                Download
+                                            </a>
+                                            <form method="post" action="{% url 'client_management:delete_file' file.pk %}"
+                                                  class="inline" onsubmit="return confirm('Are you sure?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="text-red-600 hover:text-red-800">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-gray-600 text-center py-8">No documents uploaded yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Modal -->
+<div id="uploadModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <h3 class="text-xl font-semibold mb-4">Upload Document</h3>
+        <form method="post" action="{% url 'client_management:upload_file' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-4">
+                {{ file_form.as_p }}
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" onclick="document.getElementById('uploadModal').classList.add('hidden')"
+                        class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                    Cancel
+                </button>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                    Upload
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
 

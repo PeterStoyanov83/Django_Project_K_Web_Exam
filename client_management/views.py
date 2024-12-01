@@ -7,9 +7,6 @@ from .forms import CustomUserCreationForm, CustomAuthenticationForm, ClientForm,
 from .models import Client, Laptop, CustomUser
 
 
-
-
-
 @login_required
 def profile(request):
     client, created = Client.objects.get_or_create(user=request.user)
@@ -59,6 +56,7 @@ class CustomPasswordResetView(PasswordResetView):
     email_template_name = 'client_management/password_reset_email.html'
     success_url = reverse_lazy('client_management:password_reset_done')
     template_name = 'client_management/password_reset.html'
+
 
 @login_required
 def laptop_list(request):
