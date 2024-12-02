@@ -5,12 +5,33 @@
 {% block content %}
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-4xl font-bold mb-6">{{ page_title }}</h1>
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <p class="text-lg mb-4">Project K is a cutting-edge learning platform dedicated to providing high-quality education in IT and business fields.</p>
-            <h2 class="text-2xl font-semibold mb-2">Our Mission</h2>
-            <p class="mb-4">We aim to empower individuals with practical skills and knowledge, preparing them for the challenges of the modern workplace.</p>
-            <h2 class="text-2xl font-semibold mb-2">Our Approach</h2>
-            <p>We believe in hands-on learning and real-world application. Our courses are designed to be interactive and engaging, combining theoretical knowledge with practical exercises and projects.</p>
+        <p class="text-lg mb-8">Welcome to Project K, your gateway to cutting-edge IT and business education. We offer a diverse range of courses designed to empower professionals and students alike with the skills needed in today's fast-paced digital world.</p>
+        
+        <h2 class="text-2xl font-semibold mb-4">Featured Courses</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for course in featured_courses %}
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold mb-2">{{ course.title }}</h3>
+                    <p class="text-gray-600 mb-4">{{ course.description }}</p>
+                    <a href="{% url 'course_management:course_detail' course.id %}" 
+                       class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                        Learn More
+                    </a>
+                </div>
+            {% empty %}
+                <p class="text-gray-600">No featured courses available at the moment.</p>
+            {% endfor %}
+        </div>
+
+        <div class="mt-12">
+            <h2 class="text-2xl font-semibold mb-4">Why Choose Project K?</h2>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Expert instructors with industry experience</li>
+                <li>Flexible learning options - online and in-person</li>
+                <li>Hands-on projects and real-world applications</li>
+                <li>Networking opportunities with peers and professionals</li>
+                <li>Continuous updates to keep pace with evolving technologies</li>
+            </ul>
         </div>
     </div>
 {% endblock %}

@@ -6,6 +6,13 @@
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-4xl font-bold mb-6">{{ page_title }}</h1>
         <div class="bg-white rounded-lg shadow-md p-6">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="mb-4 p-4 {% if message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %} rounded">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
             <form method="post" class="max-w-md mx-auto">
                 {% csrf_token %}
                 <div class="mb-4">

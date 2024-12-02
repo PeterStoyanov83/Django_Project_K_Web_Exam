@@ -97,12 +97,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'client_management.CustomUser'
 
+# Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # For production
 EMAIL_HOST = 'smtp.gmail.com'  # Or your email provider's SMTP server
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'peterstoyanov83@gmail.com'  # Your email address
-EMAIL_HOST_PASSWORD = 'Peterko123123new'  # Your email password or app password
-DEFAULT_FROM_EMAIL = 'Peterko123123new'
-
+EMAIL_HOST_PASSWORD = 'Peterko123123new!'  # Your email password or app password
+DEFAULT_FROM_EMAIL = 'peterstoyanov83@gmail.com'
+CONTACT_EMAIL = 'peterstoyanov83@gmail.com'  # The email address where contact form submissions will be sent
