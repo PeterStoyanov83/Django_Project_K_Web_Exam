@@ -1,0 +1,20 @@
+{% load static %}
+
+<div id="chatbot" class="chatbot">
+    <div class="chatbot-bubble">
+        <div class="chatbot-header">
+            <h3>Daisy - Project K Assistant</h3>
+            <button id="close-chat" class="close-btn">&times;</button>
+        </div>
+        <div id="chat-messages" class="chat-messages"></div>
+        <form id="chat-form" class="chat-form">
+            <input type="text" id="user-input" placeholder="Type your message..." required>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+    <button id="open-chat" class="chat-btn">Chat with Daisy</button>
+</div>
+
+<link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
+<script src="{% static 'js/chatbot.js' %}"></script>
+

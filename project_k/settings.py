@@ -109,3 +109,15 @@ EMAIL_HOST_USER = 'peterstoyanov83@gmail.com'  # Your email address
 EMAIL_HOST_PASSWORD = 'Peterko123123new!'  # Your email password or app password
 DEFAULT_FROM_EMAIL = 'peterstoyanov83@gmail.com'
 CONTACT_EMAIL = 'peterstoyanov83@gmail.com'  # The email address where contact form submissions will be sent
+
+# OpenAI settings
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+if not OPENAI_API_KEY:
+    print("Warning: OPENAI_API_KEY is not set in environment variables")
+
+OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo')
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]

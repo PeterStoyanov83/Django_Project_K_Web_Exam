@@ -12,6 +12,7 @@ def course_list(request):
     }
     return render(request, 'course_management/course_list.html', context)
 
+
 def schedule(request):
     schedules = CourseSchedule.objects.all().select_related('course', 'room', 'time_slot')
     rooms = Room.objects.all()
@@ -41,6 +42,7 @@ def schedule(request):
     }
     return render(request, 'course_management/schedule.html', context)
 
+
 @login_required
 @user_passes_test(lambda u: u.is_staff)
 def course_update(request, pk):
@@ -61,7 +63,6 @@ def course_update(request, pk):
     else:
         form = CourseForm(instance=course)
     return render(request, 'course_management/course_form.html', {'form': form, 'action': 'Update'})
-
 
 
 def course_detail(request, pk):
@@ -118,18 +119,38 @@ def course_update(request, pk):
         form = CourseForm(request.POST, instance=course)
         if form.is_valid():
             updated_course = form.save()
+            room = form.cleaned_data.get('room')
+            time_slot = form.cleaned_data.get('time_slot')
             schedule_status = form.cleaned_data.get('schedule_status')
-            if schedule_status:
-                # Update the status of the latest schedule
-                latest_schedule = updated_course.schedules.order_by('-date').first()
-                if latest_schedule:
-                    latest_schedule.status = schedule_status
+            schedule_date = form.cleaned_data.get('schedule_date')
+
+            if room and time_slot and schedule_date:
+                latest_schedule, created = CourseSchedule.objects.get_or_create(
+                    course=updated_course,
+                    date=schedule_date,
+                    defaults={
+                        'room': room,
+                        'time_slot': time_slot,
+                        'status': schedule_status or 'SCHEDULED'
+                    }
+                )
+                if not created:
+                    latest_schedule.room = room
+                    latest_schedule.time_slot = time_slot
+                    latest_schedule.status = schedule_status or latest_schedule.status
                     latest_schedule.save()
+
             messages.success(request, 'Course updated successfully.')
             return redirect('course_management:course_detail', pk=updated_course.pk)
     else:
         form = CourseForm(instance=course)
-    return render(request, 'course_management/course_form.html', {'form': form, 'action': 'Update'})
+
+    context = {
+        'form': form,
+        'course': course,
+        'action': 'Update'
+    }
+    return render(request, 'course_management/course_form.html', context)
 
 
 @login_required
@@ -155,7 +176,7 @@ def schedule_create(request, course_pk):
             return redirect('course_management:course_detail', pk=course.pk)
     else:
         form = CourseScheduleForm()
-    return render(request, 'course_management/schedule_form.html', {'form': form, 'course': course})
+    return render(request, '../templates/course_management/schedule_form.html', {'form': form, 'course': course})
 
 
 @login_required
