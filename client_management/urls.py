@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
@@ -6,7 +7,9 @@ from . import views
 app_name = 'client_management'
 
 urlpatterns = [
-    path('profile/', views.profile, name='profile'),
+    path('profile/', login_required(views.profile), name='profile'),
+    path('profile/edit/', login_required(views.profile_edit), name='profile_edit'),
+    path('profile/upload-file/', views.upload_file, name='upload_file'),
     path('laptops/', views.laptop_list, name='laptop_list'),
     path('register/', views.register, name='register'),
     path('login/', views.user_login, name='login'),

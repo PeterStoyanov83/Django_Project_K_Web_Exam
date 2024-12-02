@@ -20,17 +20,31 @@ class LaptopForm(forms.ModelForm):
             'warranty_end_date': forms.DateInput(attrs={'type': 'date'}),
         }
 
-class ClientForm(forms.ModelForm):
-    class Meta:
-        model = Client
-        fields = ['company_name', 'industry']
-
 class CustomUserForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = ['username', 'email', 'first_name', 'last_name', 'profile_picture']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'}),
+            'email': forms.EmailInput(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'}),
+            'first_name': forms.TextInput(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'}),
+            'last_name': forms.TextInput(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'}),
+            'profile_picture': forms.FileInput(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'}),
+        }
+
+class ClientForm(forms.ModelForm):
+    class Meta:
+        model = Client
+        fields = ['company_name', 'industry']
+        widgets = {
+            'company_name': forms.TextInput(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'}),
+            'industry': forms.TextInput(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'}),
+        }
 
 class ClientFileForm(forms.ModelForm):
     class Meta:
         model = ClientFile
         fields = ['file']
+        widgets = {
+            'file': forms.FileInput(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'}),
+        }
