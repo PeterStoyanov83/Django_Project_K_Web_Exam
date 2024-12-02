@@ -1,15 +1,29 @@
 from django import forms
 from .models import Course, CourseSchedule, Booking
 
+
 class CourseForm(forms.ModelForm):
+    schedule_status = forms.ChoiceField(choices=CourseSchedule.STATUS_CHOICES, required=False)
+
     class Meta:
         model = Course
-        fields = ['title', 'description', 'lecturer', 'capacity']
+        fields = ['title', 'description', 'capacity', 'lecturer', 'schedule_status']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.pk:
+            # If editing an existing course, get the latest schedule status
+            latest_schedule = self.instance.schedules.order_by('-date').first()
+            if latest_schedule:
+                self.fields['schedule_status'].initial = latest_schedule.status
+        self.fields['schedule_status'].widget.attrs.update({'class': 'form-select'})
+
 
 class CourseScheduleForm(forms.ModelForm):
     class Meta:
         model = CourseSchedule
-        fields = ['course', 'room', 'time_slot', 'date', 'status']
+        fields = ['room', 'time_slot', 'date', 'status']
+
 
 class BookingForm(forms.ModelForm):
     class Meta:
@@ -33,4 +47,3 @@ class BookingForm(forms.ModelForm):
             if Booking.objects.filter(course_schedule=course_schedule, user=self.user).exists():
                 raise forms.ValidationError('You have already booked this course.')
         return cleaned_data
-

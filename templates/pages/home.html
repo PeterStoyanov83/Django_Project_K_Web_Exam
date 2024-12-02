@@ -4,8 +4,16 @@
 
 {% block content %}
     <div class="container mx-auto px-4 py-8">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-4 p-4 {% if message.tags == 'error' %}bg-red-100 text-red-700{% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-700{% else %}bg-blue-100 text-blue-700{% endif %} rounded-lg">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
         <h1 class="text-4xl font-bold mb-6">{{ page_title }}</h1>
-        <p class="text-lg mb-8">Expand your knowledge with our interactive learning platform.</p>
+        <p class="text-lg mb-8">Welcome to Project K, your gateway to cutting-edge IT and business education. We offer a diverse range of courses designed to empower professionals and students alike with the skills needed in today's fast-paced digital world.</p>
         
         <h2 class="text-2xl font-semibold mb-4">Featured Courses</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -21,6 +29,17 @@
             {% empty %}
                 <p class="text-gray-600">No featured courses available at the moment.</p>
             {% endfor %}
+        </div>
+
+        <div class="mt-12">
+            <h2 class="text-2xl font-semibold mb-4">Why Choose Project K?</h2>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Expert instructors with industry experience</li>
+                <li>Flexible learning options - online and in-person</li>
+                <li>Hands-on projects and real-world applications</li>
+                <li>Networking opportunities with peers and professionals</li>
+                <li>Continuous updates to keep pace with evolving technologies</li>
+            </ul>
         </div>
     </div>
 {% endblock %}

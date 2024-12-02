@@ -5,6 +5,7 @@ app_name = 'course_management'
 
 urlpatterns = [
     path('', views.course_list, name='course_list'),
+    path('schedule/', views.schedule, name='schedule'),
     path('create/', views.course_create, name='course_create'),
     path('<int:pk>/', views.course_detail, name='course_detail'),
     path('<int:pk>/update/', views.course_update, name='course_update'),
@@ -15,7 +16,9 @@ urlpatterns = [
     path('bookings/create/', views.booking_create, name='booking_create'),
     path('bookings/', views.booking_list, name='booking_list'),
     path('bookings/<int:pk>/cancel/', views.booking_cancel, name='booking_cancel'),
+    path('admin-panel/', views.admin_panel, name='admin_panel'),
+    path('admin-course-applications/', views.admin_course_applications, name='admin_course_applications'),
+    path('approve-application/<int:application_id>/', views.approve_course_application, name='approve_course_application'),
+    path('reject-application/<int:application_id>/', views.reject_course_application, name='reject_course_application'),
+    path('<int:course_id>/apply/', views.apply_for_course, name='apply_for_course'),
 ]
-
-
-

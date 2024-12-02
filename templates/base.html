@@ -6,170 +6,63 @@
     <title>{% block title %}Project K{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
+        .overflow-x-auto {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
-        .modal-content {
-            background-color: rgba(255,255,255,0.9);
-            margin: 15% auto;
-            padding: 20px;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 500px;
+
+        @media (max-width: 640px) {
+            .overflow-x-auto table {
+                min-width: 640px;
+            }
         }
     </style>
 </head>
-<body class="flex flex-col min-h-screen bg-gray-50">
-    <header class="bg-blue-600 text-white">
-        <div class="container mx-auto px-4">
-            <nav class="flex items-center justify-between h-16">
-                <a href="{% url 'pages:home' %}" class="text-2xl font-bold">Project K</a>
-                <ul class="flex space-x-6">
-                    <li><a href="{% url 'pages:home' %}" class="hover:text-blue-200">Home</a></li>
-                    <li><a href="{% url 'course_management:course_list' %}" class="hover:text-blue-200">Courses</a></li>
-                    <li><a href="{% url 'pages:about' %}" class="hover:text-blue-200">About</a></li>
-                    <li><a href="{% url 'pages:contact' %}" class="hover:text-blue-200">Contact</a></li>
-                    {% if user.is_authenticated %}
-                        <li><a href="{% url 'client_management:profile' %}" class="hover:text-blue-200">Profile</a></li>
-                        <li><a href="{% url 'client_management:logout' %}" class="hover:text-blue-200">Logout</a></li>
-                    {% else %}
-                        <li><button id="openAuthModal" class="hover:text-blue-200">Login/Register</button></li>
+<body class="flex flex-col min-h-screen bg-gray-100">
+<header class="bg-blue-600 text-white">
+    <div class="container mx-auto px-4">
+        <nav class="flex items-center justify-between h-16">
+            <a href="{% url 'pages:home' %}" class="text-2xl font-bold">Project K</a>
+            <ul class="flex space-x-6">
+                <li><a href="{% url 'pages:home' %}" class="hover:text-blue-200">Home</a></li>
+                <li><a href="{% url 'course_management:course_list' %}" class="hover:text-blue-200">Courses</a></li>
+                <li><a href="{% url 'pages:about' %}" class="hover:text-blue-200">About</a></li>
+                <li><a href="{% url 'pages:contact' %}" class="hover:text-blue-200">Contact</a></li>
+                {% if user.is_authenticated %}
+                    {% if user.is_staff %}
+                        <li><a href="{% url 'course_management:admin_panel' %}" class="hover:text-blue-200">Admin
+                            Panel</a></li>
                     {% endif %}
-                </ul>
-            </nav>
-        </div>
-    </header>
-
-    <main class="flex-grow">
-        {% block content %}{% endblock %}
-    </main>
-
-    <footer class="bg-gray-800 text-white py-6">
-        <div class="container mx-auto px-4 text-center">
-            <p>&copy; {% now "Y" %} Project K. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <div id="authModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div id="authTabs" class="mb-4">
-                <button class="px-4 py-2 bg-blue-500 text-white" data-tab="login">Login</button>
-                <button class="px-4 py-2" data-tab="register">Register</button>
-                <button class="px-4 py-2" data-tab="reset">Reset Password</button>
-            </div>
-            <div id="authForms">
-                <div id="loginForm">
-                    <h2 class="text-2xl mb-4">Login</h2>
-                    <form method="post" action="{% url 'client_management:login' %}">
-                        {% csrf_token %}
-                        <div class="mb-4">
-                            <label for="login-username" class="block mb-2">Username</label>
-                            <input type="text" id="login-username" name="username" required class="w-full px-3 py-2 border rounded">
-                        </div>
-                        <div class="mb-4">
-                            <label for="login-password" class="block mb-2">Password</label>
-                            <input type="password" id="login-password" name="password" required class="w-full px-3 py-2 border rounded">
-                        </div>
-                        <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded">Login</button>
-                    </form>
-                </div>
-                <div id="registerForm" style="display: none;">
-                    <h2 class="text-2xl mb-4">Register</h2>
-                    <form method="post" action="{% url 'client_management:register' %}">
-                        {% csrf_token %}
-                        <div class="mb-4">
-                            <label for="register-username" class="block mb-2">Username</label>
-                            <input type="text" id="register-username" name="username" required class="w-full px-3 py-2 border rounded">
-                        </div>
-                        <div class="mb-4">
-                            <label for="register-email" class="block mb-2">Email</label>
-                            <input type="email" id="register-email" name="email" required class="w-full px-3 py-2 border rounded">
-                        </div>
-                        <div class="mb-4">
-                            <label for="register-password1" class="block mb-2">Password</label>
-                            <input type="password" id="register-password1" name="password1" required class="w-full px-3 py-2 border rounded">
-                        </div>
-                        <div class="mb-4">
-                            <label for="register-password2" class="block mb-2">Confirm Password</label>
-                            <input type="password" id="register-password2" name="password2" required class="w-full px-3 py-2 border rounded">
-                        </div>
-                        <div class="mb-4">
-                            <label for="register-dob" class="block mb-2">Date of Birth</label>
-                            <input type="date" id="register-dob" name="date_of_birth" required class="w-full px-3 py-2 border rounded">
-                        </div>
-                        <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded">Register</button>
-                    </form>
-                </div>
-                <div id="resetForm" style="display: none;">
-                    <h2 class="text-2xl mb-4">Reset Password</h2>
-                    <form method="post" action="{% url 'client_management:password_reset' %}">
-                        {% csrf_token %}
-                        <div class="mb-4">
-                            <label for="reset-email" class="block mb-2">Email</label>
-                            <input type="email" id="reset-email" name="email" required class="w-full px-3 py-2 border rounded">
-                        </div>
-                        <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded">Reset Password</button>
-                    </form>
-                </div>
-            </div>
-        </div>
+                    <li><a href="{% url 'client_management:profile' %}" class="hover:text-blue-200">Profile</a></li>
+                    <li><a href="{% url 'client_management:logout' %}" class="hover:text-blue-200">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'client_management:login' %}" class="hover:text-blue-200">Login</a></li>
+                    <li><a href="{% url 'client_management:register' %}" class="hover:text-blue-200">Register</a></li>
+                {% endif %}
+            </ul>
+        </nav>
     </div>
+</header>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var modal = document.getElementById("authModal");
-            var btn = document.getElementById("openAuthModal");
-            var span = document.getElementsByClassName("close")[0];
-            var tabs = document.querySelectorAll("#authTabs button");
-            var forms = document.querySelectorAll("#authForms > div");
+<main class="flex-grow">
+    {% if messages %}
+        <div class="container mx-auto px-4 py-4">
+            {% for message in messages %}
+                <div class="mb-4 p-4 {% if message.tags == 'error' %}bg-red-100 text-red-700{% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-700{% else %}bg-blue-100 text-blue-700{% endif %} rounded-lg">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
-            btn.onclick = function() {
-                modal.style.display = "block";
-            }
+    {% block content %}{% endblock %}
+</main>
 
-            span.onclick = function() {
-                modal.style.display = "none";
-            }
-
-            window.onclick = function(event) {
-                if (event.target === modal) {
-                    modal.style.display = "none";
-                }
-            }
-
-            tabs.forEach(function(tab) {
-                tab.addEventListener('click', function() {
-                    var tabName = this.getAttribute('data-tab');
-                    forms.forEach(function(form) {
-                        form.style.display = 'none';
-                    });
-                    document.getElementById(tabName + 'Form').style.display = 'block';
-                    tabs.forEach(function(t) {
-                        t.classList.remove('bg-blue-500', 'text-white');
-                    });
-                    this.classList.add('bg-blue-500', 'text-white');
-                });
-            });
-        });
-
-        function openAuthModal(tab) {
-            var modal = document.getElementById("authModal");
-            modal.style.display = "block";
-            var tabButton = document.querySelector(`#authTabs button[data-tab="${tab}"]`);
-            if (tabButton) {
-                tabButton.click();
-            }
-        }
-    </script>
+<footer class="bg-gray-800 text-white py-4">
+    <div class="container mx-auto px-4 text-center">
+        <p>&copy; {% now "Y" %} Project K. All rights reserved.</p>
+    </div>
+</footer>
 </body>
 </html>
 
