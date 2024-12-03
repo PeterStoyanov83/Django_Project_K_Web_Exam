@@ -12,6 +12,7 @@ from django.db.utils import IntegrityError
 
 fake = Faker()
 
+
 class Command(BaseCommand):
     help = 'Populate the database with random believable data'
 
@@ -154,22 +155,37 @@ class Command(BaseCommand):
                 time_slot_data.append({
                     'day': day,
                     'start_time': f'{hour:02d}:00',
-                    'end_time': f'{hour+2:02d}:00'
+                    'end_time': f'{hour + 2:02d}:00'
                 })
         time_slots = TimeSlot.objects.bulk_create([TimeSlot(**data) for data in time_slot_data])
         return time_slots
 
     def create_course_schedules(self, courses, rooms, time_slots):
+        bookings = set()  # To keep track of existing bookings
         for course in courses:
             for _ in range(random.randint(2, 5)):
-                room = random.choice([r for r in rooms if r.capacity >= course.capacity])
-                CourseSchedule.objects.create(
-                    course=course,
-                    room=room,
-                    time_slot=random.choice(time_slots),
-                    date=fake.date_between(start_date='today', end_date='+3m'),
-                    status=random.choice(['SCHEDULED', 'CANCELLED', 'COMPLETED'])
-                )
+                attempts = 0
+                while attempts < 10:  # Limit attempts to avoid infinite loop
+                    room = random.choice([r for r in rooms if r.capacity >= course.capacity])
+                    time_slot = random.choice(time_slots)
+                    date = fake.date_between(start_date='today', end_date='+3m')
+                    booking_key = (room.id, time_slot.id, date)
+
+                    if booking_key not in bookings:
+                        CourseSchedule.objects.create(
+                            course=course,
+                            room=room,
+                            time_slot=time_slot,
+                            date=date,
+                            status=random.choice(['SCHEDULED', 'CANCELLED', 'COMPLETED'])
+                        )
+                        bookings.add(booking_key)
+                        break
+                    attempts += 1
+
+                if attempts == 10:
+                    self.stdout.write(
+                        self.style.WARNING(f"Could not find a free slot for course {course.title} after 10 attempts."))
 
     def create_course_applications(self, courses, clients):
         application_data = []

@@ -1,10 +1,16 @@
-from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib import messages
+
+from django.db import transaction
 from .models import Course, CourseSchedule, Booking, CourseApplication, Room, TimeSlot
 from .forms import CourseForm, CourseScheduleForm, BookingForm
-
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.utils import timezone
+from .models import Course, CourseSchedule, Room, TimeSlot, CourseApplication
+from .forms import CourseForm, CourseScheduleFormSet
+from django.contrib.admin.views.decorators import staff_member_required
+from django.core.exceptions import ValidationError
+from django.forms import inlineformset_factory
 
 def course_list(request):
     courses = Course.objects.all()
@@ -48,23 +54,70 @@ def schedule(request):
 @user_passes_test(lambda u: u.is_staff)
 def course_update(request, pk):
     course = get_object_or_404(Course, pk=pk)
+    CourseScheduleInlineFormSet = inlineformset_factory(Course, CourseSchedule,
+                                                        fields=('room', 'time_slot', 'date', 'status'), extra=1,
+                                                        can_delete=True)
+
     if request.method == 'POST':
         form = CourseForm(request.POST, instance=course)
-        if form.is_valid():
-            updated_course = form.save()
-            schedule_status = form.cleaned_data.get('schedule_status')
-            if schedule_status:
-                # Update the status of the latest schedule
-                latest_schedule = updated_course.courseschedule_set.order_by('-date').first()
-                if latest_schedule:
-                    latest_schedule.status = schedule_status
-                    latest_schedule.save()
-            messages.success(request, 'Course updated successfully.')
-            return redirect('course_management:course_detail', pk=updated_course.pk)
+        formset = CourseScheduleInlineFormSet(request.POST, instance=course)
+        if form.is_valid() and formset.is_valid():
+            try:
+                with transaction.atomic():
+                    form.save()
+                    formset.save()
+                messages.success(request, 'Course updated successfully.')
+                return redirect('course_management:course_detail', pk=course.pk)
+            except ValidationError as e:
+                messages.error(request, str(e))
     else:
         form = CourseForm(instance=course)
-    return render(request, 'course_management/course_form.html', {'form': form, 'action': 'Update'})
+        formset = CourseScheduleInlineFormSet(instance=course)
 
+    context = {
+        'form': form,
+        'formset': formset,
+        'course': course,
+        'action': 'Update'
+    }
+    return render(request, 'course_management/course_form.html', context)
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def course_create(request):
+    CourseScheduleInlineFormSet = inlineformset_factory(Course, CourseSchedule,
+                                                        fields=('room', 'time_slot', 'date', 'status'), extra=1,
+                                                        can_delete=False)
+
+    if request.method == 'POST':
+        form = CourseForm(request.POST)
+        formset = CourseScheduleInlineFormSet(request.POST)
+        if form.is_valid() and formset.is_valid():
+            try:
+                with transaction.atomic():
+                    course = form.save()
+                    formset.instance = course
+                    formset.save()
+                messages.success(request, 'Course created successfully.')
+                return redirect('course_management:course_detail', pk=course.pk)
+            except ValidationError as e:
+                messages.error(request, str(e))
+    else:
+        form = CourseForm()
+        formset = CourseScheduleInlineFormSet()
+
+    context = {
+        'form': form,
+        'formset': formset,
+        'action': 'Create'
+    }
+    return render(request, 'course_management/course_form.html', context)
+
+
+@staff_member_required
+def admin_only_view(request):
+    return render(request, '../templates/403.html')
 
 def course_detail(request, pk):
     course = get_object_or_404(Course, pk=pk)

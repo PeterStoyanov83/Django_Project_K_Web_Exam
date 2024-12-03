@@ -1,57 +1,43 @@
 from django import forms
-from .models import Course, CourseSchedule, Booking, Room, TimeSlot
+from .models import Course, Room, TimeSlot, CourseSchedule, Booking
+
+from django.forms import inlineformset_factory
+
+
 
 
 class CourseForm(forms.ModelForm):
-    schedule_status = forms.ChoiceField(choices=CourseSchedule.STATUS_CHOICES, required=False)
-    room = forms.ModelChoiceField(queryset=Room.objects.all(), required=False)
-    capacity = forms.ModelChoiceField(
-        queryset=Room.objects.values_list('capacity', flat=True).distinct().order_by('capacity'),
-        required=False,
-        widget=forms.Select(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'}))
-    time_slot = forms.ModelChoiceField(queryset=TimeSlot.objects.all(), required=False)
-    schedule_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
-
     class Meta:
         model = Course
-        fields = ['title', 'description', 'lecturer', 'capacity', 'room', 'time_slot', 'schedule_date']
-        widgets = {
-            'title': forms.TextInput(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'}),
-            'description': forms.Textarea(
-                attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded-md', 'rows': 4}),
-            'lecturer': forms.Select(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'}),
-            'capacity': forms.NumberInput(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['room'].widget.attrs.update({'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'})
-        self.fields['time_slot'].widget.attrs.update({'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'})
-        self.fields['schedule_status'].widget.attrs.update(
-            {'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'})
-        self.fields['schedule_date'].widget.attrs.update(
-            {'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'})
-
-        if self.instance.pk:
-            latest_schedule = self.instance.schedules.order_by('-date').first()
-            if latest_schedule:
-                self.fields['schedule_status'].initial = latest_schedule.status
-                self.fields['room'].initial = latest_schedule.room
-                self.fields['time_slot'].initial = latest_schedule.time_slot
-                self.fields['schedule_date'].initial = latest_schedule.date
+        fields = ['title', 'description', 'lecturer', 'capacity']
 
     def clean(self):
         cleaned_data = super().clean()
-        room = cleaned_data.get('room')
-        if room:
-            cleaned_data['capacity'] = room.capacity
+        capacity = cleaned_data.get('capacity')
+        if capacity is not None and capacity <= 0:
+            raise forms.ValidationError("Capacity must be a positive number.")
         return cleaned_data
-
 
 class CourseScheduleForm(forms.ModelForm):
     class Meta:
         model = CourseSchedule
         fields = ['room', 'time_slot', 'date', 'status']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        room = cleaned_data.get('room')
+        course = self.instance.course if self.instance else None
+        if room and course and course.capacity > room.capacity:
+            raise forms.ValidationError("Course capacity cannot exceed room capacity.")
+        return cleaned_data
+
+CourseScheduleFormSet = inlineformset_factory(
+    Course,
+    CourseSchedule,
+    form=CourseScheduleForm,
+    extra=1,
+    can_delete=True
+)
 
 
 class BookingForm(forms.ModelForm):
