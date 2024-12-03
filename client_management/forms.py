@@ -35,6 +35,7 @@ class CustomUserForm(forms.ModelForm):
 class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
+        exclude = ['user']
         fields = ['company_name', 'industry']
         widgets = {
             'company_name': forms.TextInput(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'}),

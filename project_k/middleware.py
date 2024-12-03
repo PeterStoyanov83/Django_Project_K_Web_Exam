@@ -1,4 +1,4 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.urls import reverse
 
@@ -14,6 +14,6 @@ class AuthRequiredMiddleware:
             redirect_url = response.url
             if any(url in redirect_url for url in ['/profile/', '/course/', '/admin/']):
                 messages.error(request, "Not allowed! Please log in first.")
-                return redirect(reverse('pages:home'))
+                return render(request, '403.html', status=403)
 
         return response

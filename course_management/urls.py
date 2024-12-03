@@ -21,4 +21,6 @@ urlpatterns = [
     path('approve-application/<int:application_id>/', views.approve_course_application, name='approve_course_application'),
     path('reject-application/<int:application_id>/', views.reject_course_application, name='reject_course_application'),
     path('<int:course_id>/apply/', views.apply_for_course, name='apply_for_course'),
+    path('admin-only/', views.admin_only_view, name='admin_only'),
+
 ]

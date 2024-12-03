@@ -1,13 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-import os
 from django.utils.translation import gettext_lazy as _
+
 
 class CustomUser(AbstractUser):
     phone_number = models.CharField(_("Phone Number"), max_length=15, blank=True)
     address = models.TextField(_("Address"), blank=True)
     date_of_birth = models.DateField(_("Date of Birth"), null=True, blank=True)
     profile_picture = models.ImageField(_("Profile Picture"), upload_to='profile_pictures/', null=True, blank=True)
+    email = models.EmailField(_("email address"))
 
     class Meta:
         verbose_name = _("Custom User")
@@ -26,6 +27,7 @@ class CustomUser(AbstractUser):
     def is_client(self):
         return hasattr(self, 'client_profile')
 
+
 class Client(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='client_profile')
     company_name = models.CharField(_("Company Name"), max_length=100)
@@ -37,36 +39,30 @@ class Client(models.Model):
         verbose_name_plural = _("Clients")
 
     def __str__(self):
-        return f"{self.user.username} - {self.company_name}"
+        return self.company_name
 
-def client_file_path(instance, filename):
-    return f'client_files/{instance.client.user.username}/{filename}'
 
 class ClientFile(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='files')
-    file = models.FileField(_("File"), upload_to=client_file_path)
-    upload_date = models.DateTimeField(_("Upload Date"), auto_now_add=True)
+    client = models.ForeignKey('Client', on_delete=models.CASCADE, related_name='files', null=True, blank=True)
+    file = models.FileField(upload_to='client_files/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    uploaded_by = models.ForeignKey('CustomUser', on_delete=models.SET_NULL, null=True, blank=True, related_name='uploaded_files')
 
     class Meta:
         verbose_name = _("Client File")
         verbose_name_plural = _("Client Files")
 
     def __str__(self):
-        return f"{self.client.user.username} - {self.file_name}"
+        return f"{self.file.name} - {self.uploaded_at}"
 
-    @property
-    def file_name(self):
-        return os.path.basename(self.file.name)
 
-    @property
-    def file_type(self):
-        return self.file_name.split('.')[-1] if '.' in self.file_name else ''
+
 
 class Laptop(models.Model):
     STATUS_CHOICES = [
-        ('active', _('Active')),
-        ('maintenance', _('Maintenance')),
-        ('retired', _('Retired'))
+        ('active', 'Active'),
+        ('maintenance', 'In Maintenance'),
+        ('retired', 'Retired'),
     ]
 
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='laptops')
@@ -82,20 +78,4 @@ class Laptop(models.Model):
         verbose_name_plural = _("Laptops")
 
     def __str__(self):
-        return f"{self.brand} {self.model} - {self.client.user.username}"
-
-class CourseApplication(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='client_course_applications')
-    course = models.ForeignKey('course_management.Course', on_delete=models.CASCADE, related_name='client_applications')
-    status = models.CharField(max_length=20,
-                              choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')],
-                              default='pending')
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = _("Course Application")
-        verbose_name_plural = _("Course Applications")
-
-    def __str__(self):
-        return f"{self.user.username} - {self.course.title}"
-
+        return f"{self.brand} {self.model} - {self.serial_number}"

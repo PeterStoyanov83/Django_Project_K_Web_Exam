@@ -1,4 +1,4 @@
-version: '3.8'
+version: '4.36'
 
 services:
   db:
@@ -12,11 +12,7 @@ services:
       - POSTGRES_PASSWORD=project_k_password
     ports:
       - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U project_k_user -d project_k_db"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+
 
 volumes:
   postgres_data:

@@ -5,6 +5,10 @@ from .models import Course, CourseSchedule, Booking, Room, TimeSlot
 class CourseForm(forms.ModelForm):
     schedule_status = forms.ChoiceField(choices=CourseSchedule.STATUS_CHOICES, required=False)
     room = forms.ModelChoiceField(queryset=Room.objects.all(), required=False)
+    capacity = forms.ModelChoiceField(
+        queryset=Room.objects.values_list('capacity', flat=True).distinct().order_by('capacity'),
+        required=False,
+        widget=forms.Select(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'}))
     time_slot = forms.ModelChoiceField(queryset=TimeSlot.objects.all(), required=False)
     schedule_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
 

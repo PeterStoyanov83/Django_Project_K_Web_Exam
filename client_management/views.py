@@ -17,29 +17,26 @@ from django.urls import reverse
 
 @login_required
 def profile_edit(request):
-    user = request.user
     try:
-        client = user.client
+        client = request.user.client_profile
     except Client.DoesNotExist:
-        client = Client.objects.create(user=user)
+        client = Client(user=request.user)
 
     if request.method == 'POST':
-        user_form = CustomUserForm(request.POST, request.FILES, instance=user)
+        user_form = CustomUserForm(request.POST, request.FILES, instance=request.user)
         client_form = ClientForm(request.POST, instance=client)
         if user_form.is_valid() and client_form.is_valid():
             user_form.save()
             client_form.save()
-            messages.success(request, 'Your profile has been updated successfully.')
             return redirect('client_management:profile')
     else:
-        user_form = CustomUserForm(instance=user)
+        user_form = CustomUserForm(instance=request.user)
         client_form = ClientForm(instance=client)
 
-    context = {
+    return render(request, 'client_management/profile_edit.html', {
         'user_form': user_form,
-        'client_form': client_form,
-    }
-    return render(request, 'client_management/profile_edit.html', context)
+        'client_form': client_form
+    })
 
 
 @login_required

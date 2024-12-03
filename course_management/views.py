@@ -1,3 +1,4 @@
+from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -95,20 +96,24 @@ def apply_for_course(request, course_id):
 
     return redirect('course_management:course_detail', pk=course_id)
 
-
 @login_required
 def course_create(request):
     if request.method == 'POST':
         form = CourseForm(request.POST)
         if form.is_valid():
-            course = form.save(commit=False)
-            course.lecturer = request.user
-            course.save()
-            messages.success(request, 'Course created successfully.')
+            course = form.save()
+            # Create a default schedule for the course
+            CourseSchedule.objects.create(
+                course=course,
+                room=form.cleaned_data.get('room'),
+                time_slot=form.cleaned_data.get('time_slot'),
+                date=form.cleaned_data.get('schedule_date'),
+                status='SCHEDULED'
+            )
             return redirect('course_management:course_detail', pk=course.pk)
     else:
         form = CourseForm()
-    return render(request, 'course_management/course_form.html', {'form': form, 'action': 'Create'})
+    return render(request, 'course_management/course_form.html', {'form': form})
 
 
 @login_required
@@ -279,3 +284,7 @@ def reject_course_application(request, application_id):
 @user_passes_test(lambda u: u.is_staff)
 def admin_panel(request):
     return render(request, 'course_management/admin_panel.html')
+
+@staff_member_required
+def admin_only_view(request):
+    return render(request, '../templates/403.html')
