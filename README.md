@@ -44,7 +44,5 @@ Project K is a comprehensive IT and business education platform designed to conn
 - Tailwind CSS for styling
 - OpenAI API for chatbot functionality
 
-## Setup Instructions
 
-1. Clone the repository:
 
