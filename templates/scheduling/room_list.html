@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Rooms - Project K{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Rooms</h1>
+    <a href="{% url 'scheduling:room_create' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">
+        Create New Room
+    </a>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white">
+            <thead>
+                <tr>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Name
+                    </th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Capacity
+                    </th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for room in rooms %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {{ room.name }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {{ room.capacity }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="{% url 'scheduling:room_update' room.id %}" class="text-indigo-600 hover:text-indigo-900 mr-4">Edit</a>
+                        <a href="{% url 'scheduling:room_delete' room.id %}" class="text-red-600 hover:text-red-900">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="px-6 py-4 text-center">No rooms available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+

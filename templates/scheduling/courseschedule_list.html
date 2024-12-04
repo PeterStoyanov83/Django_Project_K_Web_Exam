@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Course Schedules - Project K{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Course Schedules</h1>
+    {% if user.is_staff %}
+    <a href="{% url 'scheduling:courseschedule_create' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">
+        Create New Schedule
+    </a>
+    {% endif %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white">
+            <thead>
+                <tr>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Course
+                    </th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Room
+                    </th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Date
+                    </th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Time Slot
+                    </th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Status
+                    </th>
+                    {% if user.is_staff %}
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Actions
+                    </th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for schedule in schedules %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="{% url 'scheduling:courseschedule_detail' schedule.id %}" class="text-blue-600 hover:text-blue-900">
+                            {{ schedule.course.title }}
+                        </a>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {{ schedule.room.name }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {{ schedule.date|date:"F d, Y" }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {{ schedule.time_slot }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {{ schedule.get_status_display }}
+                    </td>
+                    {% if user.is_staff %}
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="{% url 'scheduling:courseschedule_update' schedule.id %}" class="text-indigo-600 hover:text-indigo-900 mr-4">Edit</a>
+                        <a href="{% url 'scheduling:courseschedule_delete' schedule.id %}" class="text-red-600 hover:text-red-900">Delete</a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="{% if user.is_staff %}6{% else %}5{% endif %}" class="px-6 py-4 text-center">No course schedules available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,73 @@
+.fc-header-toolbar {
+    margin-bottom: 1.5em;
+    padding: 1em;
+    background-color: #f3f4f6;
+    border-radius: 0.5rem;
+}
+
+.fc-toolbar-title {
+    font-size: 1.25rem !important;
+    font-weight: 600;
+}
+
+.fc-button-primary {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+}
+
+.fc-button-primary:hover {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+}
+
+.fc-event {
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+.fc-event-title {
+    font-weight: 600;
+}
+
+.fc-event-time {
+    font-size: 0.875rem;
+}
+
+.fc-day-today {
+    background-color: #e5e7eb !important;
+}
+
+.fc-timegrid-slot {
+    height: 3em !important;
+}
+
+.fc-timegrid-axis {
+    padding-right: 0.5rem;
+}
+
+.fc-col-header-cell {
+    background-color: #f3f4f6;
+    font-weight: 600;
+}
+
+.fc-timegrid-event {
+    border-radius: 0.25rem;
+}
+
+.fc-timegrid-event .fc-event-main {
+    padding: 0.25rem;
+}
+
+.schedule-day-checkbox:checked + span {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.schedule-form {
+    transition: all 0.3s ease;
+}
+
+.schedule-form:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+

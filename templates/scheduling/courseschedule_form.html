@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit{% else %}Create{% endif %} Course Schedule - Project K{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">{% if form.instance.pk %}Edit{% else %}Create{% endif %} Course Schedule</h1>
+    <form method="post" class="max-w-lg mx-auto">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label for="{{ form.course.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">Course:</label>
+            {{ form.course }}
+        </div>
+        <div class="mb-4">
+            <label for="{{ form.room.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">Room:</label>
+            {{ form.room }}
+        </div>
+        <div class="mb-4">
+            <label for="{{ form.time_slot.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">Time Slot:</label>
+            {{ form.time_slot }}
+        </div>
+        <div class="mb-4">
+            <label for="{{ form.date.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">Date:</label>
+            {{ form.date }}
+        </div>
+        <div class="mb-4">
+            <label for="{{ form.status.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">Status:</label>
+            {{ form.status }}
+        </div>
+        <div class="flex items-center justify-between">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                {% if form.instance.pk %}Update{% else %}Create{% endif %}
+            </button>
+            <a href="{% url 'scheduling:courseschedule_list' %}" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
