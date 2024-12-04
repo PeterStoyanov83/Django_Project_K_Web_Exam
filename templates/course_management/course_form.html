@@ -3,211 +3,289 @@
 
 {% block title %}{{ action }} Course - Project K{% endblock %}
 
+{% block extra_head %}
+
+    <link rel="stylesheet" href="{% static 'schedule/css/schedule.css' %}">
+    <script src="{% static 'schedule/js/schedule.js' %}"></script>
+
+{% endblock %}
+
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-4xl mx-auto">
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-            <div class="bg-blue-600 text-white p-6">
-                <h1 class="text-2xl font-bold">{{ action }} Course</h1>
-            </div>
-            
-            <form method="post" class="p-6 space-y-8">
-                {% csrf_token %}
-                
-                <!-- Course Details Section -->
-                <div class="space-y-6">
-                    <h2 class="text-xl font-semibold text-gray-900">Course Details</h2>
-                    <div class="grid gap-6">
-                        <!-- Course Title Field -->
-                        <div>
-                            <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                                Course Title
-                            </label>
-                            {{ form.title }}
-                            {% if form.title.errors %}
-                                {% for error in form.title.errors %}
-                                    <p class="text-red-500 text-xs mt-1">{{ error }}</p>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-
-                        <!-- Course Description Field -->
-                        <div>
-                            <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                                Course Description
-                            </label>
-                            {{ form.description }}
-                            {% if form.description.errors %}
-                                {% for error in form.description.errors %}
-                                    <p class="text-red-500 text-xs mt-1">{{ error }}</p>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Lecturer Field -->
-                            <div>
-                                <label for="{{ form.lecturer.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                                    Lecturer
-                                </label>
-                                {{ form.lecturer }}
-                                {% if form.lecturer.errors %}
-                                    {% for error in form.lecturer.errors %}
-                                        <p class="text-red-500 text-xs mt-1">{{ error }}</p>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-
-                            <!-- Capacity Field -->
-                            <div>
-                                <label for="{{ form.capacity.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                                    Capacity
-                                </label>
-                                {{ form.capacity }}
-                                {% if form.capacity.errors %}
-                                    {% for error in form.capacity.errors %}
-                                        <p class="text-red-500 text-xs mt-1">{{ error }}</p>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <div class="bg-blue-600 text-white p-6">
+                    <h1 class="text-2xl font-bold">{{ action }} Course</h1>
                 </div>
 
-                <!-- Course Schedules Section -->
-                <div class="space-y-6">
-                    <div class="flex items-center justify-between">
-                        <h2 class="text-xl font-semibold text-gray-900">Course Schedules</h2>
-                        <button type="button" class="text-sm bg-blue-50 text-blue-600 px-4 py-2 rounded-md hover:bg-blue-100 transition-colors" onclick="addScheduleForm()">
-                            Add Schedule
-                        </button>
-                    </div>
+                <form method="post" class="p-6 space-y-8">
+                    {% csrf_token %}
 
-                    {{ formset.management_form }}
-                    <div id="schedule-forms" class="space-y-4">
-                        {% for schedule_form in formset %}
-                            <div class="schedule-form bg-gray-50 p-6 rounded-lg border border-gray-200">
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {% for hidden in schedule_form.hidden_fields %}
-                                        {{ hidden }}
+                    <!-- Course Details Section -->
+                    <div class="space-y-6">
+                        <h2 class="text-xl font-semibold text-gray-900">Course Details</h2>
+                        <div class="grid gap-6">
+                            <!-- Course Title Field -->
+                            <div>
+                                <label for="{{ form.title.id_for_label }}"
+                                       class="block text-sm font-medium text-gray-700 mb-1">
+                                    Course Title
+                                </label>
+                                {{ form.title }}
+                                {% if form.title.errors %}
+                                    {% for error in form.title.errors %}
+                                        <p class="text-red-500 text-xs mt-1">{{ error }}</p>
                                     {% endfor %}
-                                    
-                                    <!-- Room Field -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Room</label>
-                                        {{ schedule_form.room }}
-                                    </div>
+                                {% endif %}
+                            </div>
 
-                                    <!-- Time Slot Field -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Time Slot</label>
-                                        {{ schedule_form.time_slot }}
-                                    </div>
+                            <!-- Course Description Field -->
+                            <div>
+                                <label for="{{ form.description.id_for_label }}"
+                                       class="block text-sm font-medium text-gray-700 mb-1">
+                                    Course Description
+                                </label>
+                                {{ form.description }}
+                                {% if form.description.errors %}
+                                    {% for error in form.description.errors %}
+                                        <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
 
-                                    <!-- Date Field -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                                        {{ schedule_form.date }}
-                                    </div>
-
-                                    <!-- Status Field -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                                        {{ schedule_form.status }}
-                                    </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Lecturer Field -->
+                                <div>
+                                    <label for="{{ form.lecturer.id_for_label }}"
+                                           class="block text-sm font-medium text-gray-700 mb-1">
+                                        Lecturer
+                                    </label>
+                                    {{ form.lecturer }}
+                                    {% if form.lecturer.errors %}
+                                        {% for error in form.lecturer.errors %}
+                                            <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                                        {% endfor %}
+                                    {% endif %}
                                 </div>
 
-                                {% if schedule_form.errors %}
-                                    <div class="mt-2 p-2 bg-red-50 rounded">
-                                        {% for field in schedule_form %}
-                                            {% for error in field.errors %}
-                                                <p class="text-red-500 text-xs">{{ error }}</p>
-                                            {% endfor %}
+                                <!-- Capacity Field -->
+                                <div>
+                                    <label for="{{ form.capacity.id_for_label }}"
+                                           class="block text-sm font-medium text-gray-700 mb-1">
+                                        Capacity
+                                    </label>
+                                    {{ form.capacity }}
+                                    {% if form.capacity.errors %}
+                                        {% for error in form.capacity.errors %}
+                                            <p class="text-red-500 text-xs mt-1">{{ error }}</p>
                                         {% endfor %}
-                                    </div>
-                                {% endif %}
-
-                                {% if formset.can_delete %}
-                                    <div class="mt-4 flex justify-end">
-                                        <label class="inline-flex items-center text-sm text-red-600 hover:text-red-800 cursor-pointer">
-                                            {{ schedule_form.DELETE }}
-                                            <span class="ml-2">Remove this schedule</span>
-                                        </label>
-                                    </div>
-                                {% endif %}
+                                    {% endif %}
+                                </div>
                             </div>
-                        {% endfor %}
+                        </div>
                     </div>
-                </div>
 
-                <!-- Form Actions -->
-                <div class="flex justify-end space-x-4 pt-6 border-t">
-                    <a href="{% url 'course_management:course_list' %}" 
-                       class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">
-                        Cancel
-                    </a>
-                    <button type="submit" 
-                            class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                        Save Changes
-                    </button>
-                </div>
-            </form>
+                    <!-- Course Schedules Section -->
+                    <div class="space-y-6">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-xl font-semibold text-gray-900">Course Schedules</h2>
+                            <button type="button" id="add-schedule"
+                                    class="text-blue-600 hover:text-blue-700 font-medium">
+                                Add Schedule
+                            </button>
+                        </div>
+
+                        <div id="schedules-container" class="space-y-6">
+                            {% for schedule_form in formset %}
+                                <div class="schedule-form bg-gray-50 p-4 rounded-lg">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <!-- Room Selection -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Room</label>
+                                            {{ schedule_form.room }}
+                                        </div>
+
+                                        <!-- Status Selection -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                            {{ schedule_form.status }}
+                                        </div>
+                                    </div>
+
+                                    <!-- Schedule Days Selection -->
+                                    <div class="mt-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Schedule
+                                            Days</label>
+                                        <div class="grid grid-cols-7 gap-2">
+                                            {% for day in "MTWHFSS" %}
+                                                <label class="flex items-center justify-center p-2 border rounded cursor-pointer hover:bg-gray-100">
+                                                    <input type="checkbox" name="schedule_days" value="{{ day }}"
+                                                           class="hidden schedule-day-checkbox">
+                                                    <span class="text-sm">{{ day }}</span>
+                                                </label>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+
+                                    <!-- Time Selection -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Start
+                                                Time</label>
+                                            <input type="time" name="start_time"
+                                                   class="w-full border-gray-300 rounded-md shadow-sm">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+                                            <input type="time" name="end_time"
+                                                   class="w-full border-gray-300 rounded-md shadow-sm">
+                                        </div>
+                                    </div>
+
+                                    <!-- Date Range -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Start
+                                                Date</label>
+                                            <input type="date" name="start_date"
+                                                   class="w-full border-gray-300 rounded-md shadow-sm">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                                            <input type="date" name="end_date"
+                                                   class="w-full border-gray-300 rounded-md shadow-sm">
+                                        </div>
+                                    </div>
+
+                                    {% if schedule_form.can_delete %}
+                                        <div class="mt-4 flex justify-end">
+                                            <button type="button"
+                                                    class="remove-schedule text-red-600 hover:text-red-700 text-sm font-medium">
+                                                Remove Schedule
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Preview Calendar -->
+                    <div class="space-y-4">
+                        <h2 class="text-xl font-semibold text-gray-900">Schedule Preview</h2>
+                        <div id="calendar" class="bg-white p-4 rounded-lg shadow"></div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex justify-end space-x-4 pt-6 border-t">
+                        <a href="{% url 'course_management:course_list' %}"
+                           class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">
+                            Cancel
+                        </a>
+                        <button type="submit"
+                                class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    function addScheduleForm() {
-        const totalForms = document.getElementById('id_form-TOTAL_FORMS');
-        const formCount = parseInt(totalForms.value);
-        const newForm = document.querySelector('.schedule-form').cloneNode(true);
-        
-        newForm.innerHTML = newForm.innerHTML.replace(/-\d+/g, `-${formCount}`);
-        newForm.querySelectorAll('input, select').forEach(input => {
-            input.name = input.name.replace(/-\d+/, `-${formCount}`);
-            input.id = input.id.replace(/-\d+/, `-${formCount}`);
-            if (input.type !== 'hidden') {
-                input.value = '';
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const schedulesContainer = document.getElementById('schedules-container');
+            const addScheduleBtn = document.getElementById('add-schedule');
+            const calendarEl = document.getElementById('calendar');
+            let calendar;
+
+            // Initialize FullCalendar
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                slotMinTime: '08:00:00',
+                slotMaxTime: '20:00:00',
+                allDaySlot: false,
+                events: [],
+                editable: false,
+            });
+            calendar.render();
+
+            // Function to update calendar events
+            function updateCalendarEvents() {
+                calendar.removeAllEvents();
+                const schedulesForms = document.querySelectorAll('.schedule-form');
+
+                schedulesForms.forEach(form => {
+                    const startDate = form.querySelector('[name="start_date"]').value;
+                    const endDate = form.querySelector('[name="end_date"]').value;
+                    const startTime = form.querySelector('[name="start_time"]').value;
+                    const endTime = form.querySelector('[name="end_time"]').value;
+                    const selectedDays = Array.from(form.querySelectorAll('.schedule-day-checkbox:checked'))
+                        .map(checkbox => checkbox.value);
+
+                    if (startDate && endDate && startTime && endTime && selectedDays.length > 0) {
+                        const events = generateRecurringEvents(
+                            startDate,
+                            endDate,
+                            startTime,
+                            endTime,
+                            selectedDays
+                        );
+                        events.forEach(event => calendar.addEvent(event));
+                    }
+                });
             }
+
+            // Function to generate recurring events
+            function generateRecurringEvents(startDate, endDate, startTime, endTime, days) {
+                const events = [];
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const dayMap = {
+                    'M': 1, 'T': 2, 'W': 3, 'H': 4, 'F': 5, 'S': 6, 'S': 0
+                };
+
+                while (start <= end) {
+                    if (days.includes(Object.keys(dayMap).find(key => dayMap[key] === start.getDay()))) {
+                        events.push({
+                            title: 'Course Session',
+                            start: `${start.toISOString().split('T')[0]}T${startTime}`,
+                            end: `${start.toISOString().split('T')[0]}T${endTime}`,
+                            backgroundColor: '#3B82F6',
+                        });
+                    }
+                    start.setDate(start.getDate() + 1);
+                }
+                return events;
+            }
+
+            // Add event listeners for form changes
+            schedulesContainer.addEventListener('change', updateCalendarEvents);
+
+            // Add Schedule button functionality
+            addScheduleBtn.addEventListener('click', function () {
+                const template = document.querySelector('.schedule-form').cloneNode(true);
+                template.querySelectorAll('input').forEach(input => input.value = '');
+                template.querySelectorAll('.schedule-day-checkbox').forEach(checkbox => checkbox.checked = false);
+                schedulesContainer.appendChild(template);
+            });
+
+            // Remove Schedule button functionality
+            schedulesContainer.addEventListener('click', function (e) {
+                if (e.target.classList.contains('remove-schedule')) {
+                    const scheduleForm = e.target.closest('.schedule-form');
+                    if (document.querySelectorAll('.schedule-form').length > 1) {
+                        scheduleForm.remove();
+                        updateCalendarEvents();
+                    }
+                }
+            });
         });
-
-        document.getElementById('schedule-forms').appendChild(newForm);
-        totalForms.value = formCount + 1;
-
-        // Reinitialize date inputs for the new form
-        newForm.querySelectorAll('input[type="date"]').forEach(input => {
-            input.classList.add('w-full', 'rounded-md', 'border-gray-300', 'shadow-sm', 'focus:border-blue-500', 'focus:ring-blue-500');
-        });
-    }
-
-    // Initialize date inputs
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('input[type="date"]').forEach(input => {
-            input.classList.add('w-full', 'rounded-md', 'border-gray-300', 'shadow-sm', 'focus:border-blue-500', 'focus:ring-blue-500');
-        });
-    });
-</script>
-
-<style>
-    select,
-    textarea {
-        @apply w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500;
-    }
-
-    textarea {
-        @apply h-32 resize-y;
-    }
-
-    .schedule-form {
-        transition: all 0.3s ease;
-    }
-
-    .schedule-form:hover {
-        @apply border-blue-200 bg-blue-50;
-    }
-    #schedule-forms > div:not(:last-child) {
-        margin-bottom: 1rem;
-    }
-</style>
+    </script>
 {% endblock %}
 
