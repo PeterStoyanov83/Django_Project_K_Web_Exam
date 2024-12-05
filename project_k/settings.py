@@ -1,5 +1,8 @@
 import os
+import ssl
 from pathlib import Path
+
+import certifi
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -113,15 +116,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'client_management.CustomUser'
 
-# Email settings
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
-EMAIL_HOST = os.getenv('EMAIL_HOST')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS') == 'True'
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
-CONTACT_EMAIL = os.getenv('CONTACT_EMAIL')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+CONTACT_EMAIL = EMAIL_HOST_USER
 
 # OpenAI settings
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
@@ -130,8 +133,60 @@ if not OPENAI_API_KEY:
 
 OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo')
 
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'static'
+
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "static/"
 STATICFILES_DIRS = [
-    BASE_DIR / "staticfiles",
+    BASE_DIR / "staticfiles/"
 ]
+
+ssl_context = ssl.create_default_context(cafile=certifi.where())
+EMAIL_SSL_CONTEXT = ssl_context
+# print(STATIC_URL)
+# print(STATICFILES_DIRS)
+# print(STATIC_ROOT)
+#
+#
+#
+# import logging.config
+#
+#
+# # Add this logging configuration
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#         'file': {
+#             'class': 'logging.FileHandler',
+#             'filename': 'django.log',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console', 'file'],
+#             'level': 'INFO',
+#         },
+#         'django.request': {
+#             'handlers': ['console', 'file'],
+#             'level': 'ERROR',
+#         },
+#         'django.server': {
+#             'handlers': ['console', 'file'],
+#             'level': 'INFO',
+#         },
+#         'django.template': {
+#             'handlers': ['console', 'file'],
+#             'level': 'INFO',
+#         },
+#         'django.db.backends': {
+#             'handlers': ['console', 'file'],
+#             'level': 'INFO',
+#         },
+#     },
+# }
+#
+# logging.config.dictConfig(LOGGING)
+#

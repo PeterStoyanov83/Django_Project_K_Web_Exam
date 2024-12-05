@@ -1,16 +1,16 @@
-
-from django.db import transaction
-from .models import Course, CourseSchedule, Booking, CourseApplication, Room, TimeSlot
-from .forms import CourseForm, CourseScheduleForm, BookingForm
+from client_management.models import CustomUser
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.utils import timezone
-from .models import Course, CourseSchedule, Room, TimeSlot, CourseApplication
-from .forms import CourseForm, CourseScheduleFormSet
+from .models import Course, CourseSchedule, Room, CourseApplication, TimeSlot, Booking
+from .forms import CourseForm, CourseScheduleForm, BookingForm, UserForm
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import ValidationError
 from django.forms import inlineformset_factory
+from django.db import transaction
+from django.http import JsonResponse
+from django.urls import reverse
+
 
 def course_list(request):
     courses = Course.objects.all()
@@ -52,27 +52,79 @@ def schedule(request):
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
+def course_create(request):
+    CourseScheduleFormSet = inlineformset_factory(Course, CourseSchedule, form=CourseScheduleForm, extra=1,
+                                                  can_delete=False)
+
+    if request.method == 'POST':
+        form = CourseForm(request.POST)
+        formset = CourseScheduleFormSet(request.POST)
+        if form.is_valid() and formset.is_valid():
+            try:
+                with transaction.atomic():
+                    course = form.save()
+                    formset.instance = course
+                    formset.save()
+                if request.is_ajax():
+                    return JsonResponse({
+                        'success': True,
+                        'redirect_url': reverse('course_management:course_detail', kwargs={'pk': course.pk})
+                    })
+                messages.success(request, 'Course created successfully.')
+                return redirect('course_management:course_detail', pk=course.pk)
+            except ValidationError as e:
+                messages.error(request, str(e))
+        else:
+            if request.is_ajax():
+                return JsonResponse({
+                    'success': False,
+                    'errors': form.errors
+                })
+    else:
+        form = CourseForm()
+        formset = CourseScheduleFormSet()
+
+    context = {
+        'form': form,
+        'formset': formset,
+        'action': 'Create'
+    }
+    return render(request, 'course_management/course_form.html', context)
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
 def course_update(request, pk):
     course = get_object_or_404(Course, pk=pk)
-    CourseScheduleInlineFormSet = inlineformset_factory(Course, CourseSchedule,
-                                                        fields=('room', 'time_slot', 'date', 'status'), extra=1,
-                                                        can_delete=True)
+    CourseScheduleFormSet = inlineformset_factory(Course, CourseSchedule, form=CourseScheduleForm, extra=1,
+                                                  can_delete=True)
 
     if request.method == 'POST':
         form = CourseForm(request.POST, instance=course)
-        formset = CourseScheduleInlineFormSet(request.POST, instance=course)
+        formset = CourseScheduleFormSet(request.POST, instance=course)
         if form.is_valid() and formset.is_valid():
             try:
                 with transaction.atomic():
                     form.save()
                     formset.save()
+                if request.is_ajax():
+                    return JsonResponse({
+                        'success': True,
+                        'redirect_url': reverse('course_management:course_detail', kwargs={'pk': course.pk})
+                    })
                 messages.success(request, 'Course updated successfully.')
                 return redirect('course_management:course_detail', pk=course.pk)
             except ValidationError as e:
                 messages.error(request, str(e))
+        else:
+            if request.is_ajax():
+                return JsonResponse({
+                    'success': False,
+                    'errors': form.errors
+                })
     else:
         form = CourseForm(instance=course)
-        formset = CourseScheduleInlineFormSet(instance=course)
+        formset = CourseScheduleFormSet(instance=course)
 
     context = {
         'form': form,
@@ -83,41 +135,10 @@ def course_update(request, pk):
     return render(request, 'course_management/course_form.html', context)
 
 
-@login_required
-@user_passes_test(lambda u: u.is_staff)
-def course_create(request):
-    CourseScheduleInlineFormSet = inlineformset_factory(Course, CourseSchedule,
-                                                        fields=('room', 'time_slot', 'date', 'status'), extra=1,
-                                                        can_delete=False)
-
-    if request.method == 'POST':
-        form = CourseForm(request.POST)
-        formset = CourseScheduleInlineFormSet(request.POST)
-        if form.is_valid() and formset.is_valid():
-            try:
-                with transaction.atomic():
-                    course = form.save()
-                    formset.instance = course
-                    formset.save()
-                messages.success(request, 'Course created successfully.')
-                return redirect('course_management:course_detail', pk=course.pk)
-            except ValidationError as e:
-                messages.error(request, str(e))
-    else:
-        form = CourseForm()
-        formset = CourseScheduleInlineFormSet()
-
-    context = {
-        'form': form,
-        'formset': formset,
-        'action': 'Create'
-    }
-    return render(request, 'course_management/course_form.html', context)
-
-
 @staff_member_required
 def admin_only_view(request):
     return render(request, '../templates/403.html')
+
 
 def course_detail(request, pk):
     course = get_object_or_404(Course, pk=pk)
@@ -148,6 +169,7 @@ def apply_for_course(request, course_id):
         messages.success(request, "Your application has been submitted successfully.")
 
     return redirect('course_management:course_detail', pk=course_id)
+
 
 @login_required
 def course_create(request):
@@ -338,6 +360,108 @@ def reject_course_application(request, application_id):
 def admin_panel(request):
     return render(request, 'course_management/admin_panel.html')
 
+
 @staff_member_required
 def admin_only_view(request):
     return render(request, '../templates/403.html')
+
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_courses(request):
+    courses = Course.objects.all()
+    context = {
+        'courses': courses,
+    }
+    return render(request, 'course_management/admin_courses.html', context)
+
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_lecturers(request):
+    # Placeholder view for lecturers list
+    return render(request, 'course_management/admin_lecturers.html')
+
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_users(request):
+    # Placeholder view for users list
+    return render(request, 'course_management/admin_users.html')
+
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_lecturers(request):
+    lecturers = CustomUser.objects.filter(is_staff=True)
+    context = {
+        'lecturers': lecturers,
+    }
+    return render(request, 'course_management/admin_lecturers.html', context)
+
+
+@user_passes_test(lambda u: u.is_staff)
+def lecturer_create(request):
+    # Placeholder view for creating a new lecturer
+    if request.method == 'POST':
+        # Process form data here
+        messages.success(request, 'Lecturer created successfully.')
+        return redirect('course_management:admin_lecturers')
+    return render(request, 'course_management/lecturer_form.html')
+
+
+@user_passes_test(lambda u: u.is_staff)
+def lecturer_edit(request, pk):
+    # Placeholder view for editing a lecturer
+    lecturer = CustomUser.objects.get(pk=pk)
+    if request.method == 'POST':
+        # Process form data here
+        messages.success(request, 'Lecturer updated successfully.')
+        return redirect('course_management:admin_lecturers')
+    context = {
+        'lecturer': lecturer,
+    }
+    return render(request, 'course_management/lecturer_form.html', context)
+
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_users(request):
+    users = CustomUser.objects.all()
+    context = {
+        'users': users,
+    }
+    return render(request, 'course_management/admin_users.html', context)
+
+
+@user_passes_test(lambda u: u.is_staff)
+def user_create(request):
+    if request.method == 'POST':
+        form = UserForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'User created successfully.')
+            return redirect('course_management:admin_users')
+    else:
+        form = UserForm()
+
+    context = {
+        'form': form,
+        'is_edit': False,
+    }
+    return render(request, 'course_management/user_form.html', context)
+
+
+@user_passes_test(lambda u: u.is_staff)
+def user_edit(request, pk):
+    user = get_object_or_404(CustomUser, pk=pk)
+    if request.method == 'POST':
+        form = UserForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'User updated successfully.')
+            return redirect('course_management:admin_users')
+    else:
+        form = UserForm(instance=user)
+
+    context = {
+        'form': form,
+        'is_edit': True,
+        'user': user,
+    }
+    return render(request, 'course_management/user_form.html', context)

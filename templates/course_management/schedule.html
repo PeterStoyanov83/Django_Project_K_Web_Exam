@@ -3,26 +3,27 @@
 {% block title %}Course Schedule - Project K{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">Course Schedule</h1>
+    <div class="container mx-auto px-4 mb-8">
+        <h1 class="text-3xl font-bold mb-6">Course Schedule</h1>
 
-    <div class="mb-6">
-        <a href="{% url 'course_management:course_list' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Back to Course List
-        </a>
-    </div>
+        <div class="mb-8">
+            <a href="{% url 'course_management:admin_panel' %}"
+               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Back
+            </a>
+        </div>
 
-    <div class="overflow-x-auto">
-        <table class="min-w-full bg-white">
-            <thead>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white">
+                <thead>
                 <tr>
                     <th class="px-4 py-2 bg-gray-200"></th>
                     {% for room in rooms %}
                         <th class="px-4 py-2 bg-gray-200">{{ room.name }}</th>
                     {% endfor %}
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 {% for row in schedule_matrix %}
                     <tr>
                         <td class="border px-4 py-2 font-semibold">
@@ -33,7 +34,8 @@
                             <td class="border px-4 py-2">
                                 {% for schedule in room_data.schedules %}
                                     <div class="bg-blue-100 p-2 mb-2 rounded">
-                                        <a href="{% url 'course_management:course_detail' schedule.course.id %}" class="text-blue-600 hover:text-blue-800">
+                                        <a href="{% url 'course_management:course_detail' schedule.course.id %}"
+                                           class="text-blue-600 hover:text-blue-800">
                                             {{ schedule.course.title }}
                                         </a>
                                         <p class="text-sm text-gray-600">{{ schedule.get_status_display }}</p>
@@ -43,9 +45,15 @@
                         {% endfor %}
                     </tr>
                 {% endfor %}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
+            <div class="py-8">
+                <a href="{% url 'course_management:admin_panel' %}"
+                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors">
+                    Back
+                </a>
+            </div>
     </div>
-</div>
 {% endblock %}
 

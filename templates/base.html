@@ -1,70 +1,44 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Project K{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-        .overflow-x-auto {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        @media (max-width: 640px) {
-            .overflow-x-auto table {
-                min-width: 640px;
-            }
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% block extra_head %}{% endblock %}
 </head>
-<body class="flex flex-col min-h-screen bg-gray-100">
-<header class="bg-blue-600 text-white">
-    <div class="container mx-auto px-4">
-        <nav class="flex items-center justify-between h-16">
-            <a href="{% url 'pages:home' %}" class="text-2xl font-bold">Project K</a>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+<header class="bg-blue-600 text-white p-4">
+    <div class="container mx-auto flex items-center justify-between">
+        <h1 class="text-2xl font-bold">Project K</h1>
+        <nav>
             <ul class="flex space-x-6">
-                <li><a href="{% url 'pages:home' %}" class="hover:text-blue-200">Home</a></li>
-                <li><a href="{% url 'course_management:course_list' %}" class="hover:text-blue-200">Courses</a></li>
-                <li><a href="{% url 'pages:about' %}" class="hover:text-blue-200">About</a></li>
-                <li><a href="{% url 'pages:contact' %}" class="hover:text-blue-200">Contact</a></li>
+                <li><a href="{% url 'pages:home' %}" class="hover:underline">Home</a></li>
+                <li><a href="{% url 'course_management:course_list' %}" class="hover:underline">Courses</a></li>
                 {% if user.is_authenticated %}
-                    {% if user.is_staff %}
-                        <li><a href="{% url 'course_management:admin_panel' %}" class="hover:text-blue-200">Admin
-                            Panel</a></li>
-                    {% endif %}
-                    <li><a href="{% url 'client_management:profile' %}" class="hover:text-blue-200">Profile</a></li>
-                    <li><a href="{% url 'client_management:logout' %}" class="hover:text-blue-200">Logout</a></li>
+                    <li><a href="{% url 'course_management:admin_panel' %}" class="hover:underline">Admin Panel</a></li>
+                    <li><a href="{% url 'client_management:profile' %}" class="hover:underline">Profile</a></li>
+                    <li><a href="{% url 'client_management:logout' %}" class="hover:underline">Logout</a></li>
                 {% else %}
-                    <li><a href="{% url 'client_management:login' %}" class="hover:text-blue-200">Login</a></li>
-                    <li><a href="{% url 'client_management:register' %}" class="hover:text-blue-200">Register</a></li>
+                    <li><a href="{% url 'client_management:login' %}" class="hover:underline">Login</a></li>
+                    <li><a href="{% url 'client_management:register' %}" class="hover:underline">Register</a></li>
                 {% endif %}
             </ul>
         </nav>
     </div>
 </header>
 
-<main class="flex-grow">
-    {% if messages %}
-        <div class="container mx-auto px-4 py-4">
-            {% for message in messages %}
-                <div class="mb-4 p-4 {% if message.tags == 'error' %}bg-red-100 text-red-700{% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-700{% else %}bg-blue-100 text-blue-700{% endif %} rounded-lg">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
+<main class="flex-grow container mx-auto mt-8 px-4">
     {% block content %}{% endblock %}
-   {% include 'chatbot.html' %}
-
 </main>
 
-<footer class="bg-gray-800 text-white py-4">
-    <div class="container mx-auto px-4 text-center">
-        <p>&copy; {% now "Y" %} Project K. All rights reserved.</p>
-    </div>
+<footer class="bg-gray-200 text-center p-4 mt-8">
+    <p>&copy; 2023 Project K. All rights reserved.</p>
 </footer>
+
+{% block extra_body %}{% endblock %}
+{% include 'chatbot.html' %}
 </body>
 </html>
 

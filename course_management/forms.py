@@ -1,4 +1,6 @@
 from django import forms
+
+from client_management.models import CustomUser, Client
 from .models import Course, Room, TimeSlot, CourseSchedule, Booking
 
 from django.forms import inlineformset_factory
@@ -62,3 +64,38 @@ class BookingForm(forms.ModelForm):
             if Booking.objects.filter(course_schedule=course_schedule, user=self.user).exists():
                 raise forms.ValidationError('You have already booked this course.')
         return cleaned_data
+
+class UserForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput(), required=False)
+    confirm_password = forms.CharField(widget=forms.PasswordInput(), required=False)
+
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'first_name', 'last_name', 'phone_number',
+                  'profile_picture', 'user_type', 'is_staff', 'is_superuser',
+                  'date_of_birth', 'address']
+        widgets = {
+            'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm_password = cleaned_data.get("confirm_password")
+
+        if password and confirm_password and password != confirm_password:
+            raise forms.ValidationError("Passwords do not match")
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        password = self.cleaned_data.get('password')
+        if password:
+            user.set_password(password)
+        if commit:
+            user.save()
+        return user
+
+class ClientForm(forms.ModelForm):
+    class Meta:
+        model = Client
+        fields = ['company_name', 'industry']

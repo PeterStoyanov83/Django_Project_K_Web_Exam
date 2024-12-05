@@ -3,7 +3,9 @@ from django.core.mail import send_mail
 from django.contrib import messages
 from course_management.models import Course
 from django.conf import settings
+import logging
 
+logger = logging.getLogger(__name__)
 
 def home(request):
     featured_courses = Course.objects.all()[:3]
@@ -13,13 +15,11 @@ def home(request):
     }
     return render(request, 'pages/home.html', context)
 
-
 def about(request):
     context = {
         'page_title': 'About Us'
     }
     return render(request, 'pages/about.html', context)
-
 
 def contact(request):
     if request.method == 'POST':
@@ -31,6 +31,7 @@ def contact(request):
         subject = f"New contact form submission from {name}"
         email_message = f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}"
         try:
+            logger.info(f"Attempting to send email from {email}")
             send_mail(
                 subject,
                 email_message,
@@ -39,8 +40,10 @@ def contact(request):
                 fail_silently=False,
             )
             messages.success(request, "Your message has been sent successfully. We'll get back to you soon!")
+            logger.info(f"Email sent successfully from {email}")
         except Exception as e:
             messages.error(request, "An error occurred while sending your message. Please try again later.")
+            logger.error(f"Failed to send email from {email}. Error: {str(e)}")
 
         return redirect('pages:contact')
 
@@ -48,4 +51,3 @@ def contact(request):
         'page_title': 'Contact Us'
     }
     return render(request, 'pages/contact.html', context)
-

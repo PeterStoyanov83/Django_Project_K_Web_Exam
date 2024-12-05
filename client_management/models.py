@@ -1,18 +1,18 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
-
+from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
-    phone_number = models.CharField(_("Phone Number"), max_length=15, blank=True)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+    user_type = models.CharField(
+        max_length=10,
+        choices=[('PRIVATE', 'Private'), ('BUSINESS', 'Business')],
+        default='PRIVATE'
+    )
     address = models.TextField(_("Address"), blank=True)
     date_of_birth = models.DateField(_("Date of Birth"), null=True, blank=True)
-    profile_picture = models.ImageField(_("Profile Picture"), upload_to='profile_pictures/', null=True, blank=True)
     email = models.EmailField(_("email address"))
-
-    class Meta:
-        verbose_name = _("Custom User")
-        verbose_name_plural = _("Custom Users")
 
     def __str__(self):
         return self.username
@@ -27,11 +27,10 @@ class CustomUser(AbstractUser):
     def is_client(self):
         return hasattr(self, 'client_profile')
 
-
 class Client(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='client_profile')
-    company_name = models.CharField(_("Company Name"), max_length=100)
-    industry = models.CharField(_("Industry"), max_length=50)
+    company_name = models.CharField(max_length=100)
+    industry = models.CharField(max_length=100)
     registration_date = models.DateTimeField(_("Registration Date"), auto_now_add=True)
 
     class Meta:
@@ -41,12 +40,11 @@ class Client(models.Model):
     def __str__(self):
         return self.company_name
 
-
 class ClientFile(models.Model):
-    client = models.ForeignKey('Client', on_delete=models.CASCADE, related_name='files', null=True, blank=True)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='files')
     file = models.FileField(upload_to='client_files/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    uploaded_by = models.ForeignKey('CustomUser', on_delete=models.SET_NULL, null=True, blank=True, related_name='uploaded_files')
+    uploaded_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='uploaded_files')
 
     class Meta:
         verbose_name = _("Client File")
@@ -55,8 +53,10 @@ class ClientFile(models.Model):
     def __str__(self):
         return f"{self.file.name} - {self.uploaded_at}"
 
-
-
+    def save(self, *args, **kwargs):
+        if not self.client:
+            raise ValueError("A client must be specified for each file.")
+        super().save(*args, **kwargs)
 
 class Laptop(models.Model):
     STATUS_CHOICES = [
@@ -64,13 +64,12 @@ class Laptop(models.Model):
         ('maintenance', 'In Maintenance'),
         ('retired', 'Retired'),
     ]
-
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='laptops')
-    brand = models.CharField(_("Brand"), max_length=50)
-    model = models.CharField(_("Model"), max_length=50)
-    serial_number = models.CharField(_("Serial Number"), max_length=50, unique=True)
-    purchase_date = models.DateField(_("Purchase Date"))
-    warranty_end_date = models.DateField(_("Warranty End Date"))
+    brand = models.CharField(max_length=100)
+    model = models.CharField(max_length=100)
+    serial_number = models.CharField(max_length=100, unique=True)
+    purchase_date = models.DateField()
+    warranty_end_date = models.DateField()
     status = models.CharField(_("Status"), max_length=20, choices=STATUS_CHOICES, default='active')
 
     class Meta:
@@ -79,3 +78,4 @@ class Laptop(models.Model):
 
     def __str__(self):
         return f"{self.brand} {self.model} - {self.serial_number}"
+

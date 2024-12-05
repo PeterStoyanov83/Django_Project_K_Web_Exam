@@ -1,73 +1,105 @@
 .fc-header-toolbar {
-    margin-bottom: 1.5em;
-    padding: 1em;
-    background-color: #f3f4f6;
-    border-radius: 0.5rem;
+  margin-bottom: 1.5em;
+  padding: 1em;
+  background-color: #f3f4f6;
+  border-radius: 0.5rem;
 }
 
 .fc-toolbar-title {
-    font-size: 1.25rem !important;
-    font-weight: 600;
+  font-size: 1.25rem !important;
+  font-weight: 600;
 }
 
 .fc-button-primary {
-    background-color: #3b82f6 !important;
-    border-color: #3b82f6 !important;
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
 }
 
 .fc-button-primary:hover {
-    background-color: #2563eb !important;
-    border-color: #2563eb !important;
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
 }
 
 .fc-event {
-    cursor: pointer;
-    padding: 0.25rem;
+  cursor: pointer;
+  padding: 0.25rem;
 }
 
 .fc-event-title {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .fc-event-time {
-    font-size: 0.875rem;
+  font-size: 0.875rem;
 }
 
 .fc-day-today {
-    background-color: #e5e7eb !important;
+  background-color: #e5e7eb !important;
 }
 
 .fc-timegrid-slot {
-    height: 3em !important;
+  height: 3em !important;
 }
 
 .fc-timegrid-axis {
-    padding-right: 0.5rem;
+  padding-right: 0.5rem;
 }
 
 .fc-col-header-cell {
-    background-color: #f3f4f6;
-    font-weight: 600;
+  background-color: #f3f4f6;
+  font-weight: 600;
 }
 
 .fc-timegrid-event {
-    border-radius: 0.25rem;
+  border-radius: 0.25rem;
 }
 
 .fc-timegrid-event .fc-event-main {
-    padding: 0.25rem;
+  padding: 0.25rem;
 }
 
 .schedule-day-checkbox:checked + span {
-    background-color: #3b82f6;
-    color: white;
+  background-color: #3b82f6;
+  color: white;
 }
 
 .schedule-form {
-    transition: all 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .schedule-form:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Responsive styles */
+@media (max-width: 640px) {
+  .fc-header-toolbar {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* Dark mode styles */
+.dark .fc-header-toolbar {
+  background-color: #1f2937;
+}
+
+.dark .fc-button-primary {
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
+}
+
+.dark .fc-button-primary:hover {
+  background-color: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
+}
+
+.dark .fc-col-header-cell {
+  background-color: #1f2937;
+  color: #f3f4f6;
+}
+
+.dark .fc-day-today {
+  background-color: #374151 !important;
 }
 

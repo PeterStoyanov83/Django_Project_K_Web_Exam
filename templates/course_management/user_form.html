@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if is_edit %}Edit{% else %}Create{% endif %} User - Project K{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6">{% if is_edit %}Edit{% else %}Create{% endif %} User</h1>
+    
+    <form method="post" enctype="multipart/form-data" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        {% csrf_token %}
+        
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.username.id_for_label }}">
+                Username
+            </label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <p class="text-red-500 text-xs italic">{{ form.username.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.email.id_for_label }}">
+                Email
+            </label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <p class="text-red-500 text-xs italic">{{ form.email.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.password.id_for_label }}">
+                Password
+            </label>
+            {{ form.password }}
+            {% if form.password.errors %}
+                <p class="text-red-500 text-xs italic">{{ form.password.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.confirm_password.id_for_label }}">
+                Confirm Password
+            </label>
+            {{ form.confirm_password }}
+            {% if form.confirm_password.errors %}
+                <p class="text-red-500 text-xs italic">{{ form.confirm_password.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.first_name.id_for_label }}">
+                First Name
+            </label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}
+                <p class="text-red-500 text-xs italic">{{ form.first_name.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.last_name.id_for_label }}">
+                Last Name
+            </label>
+            {{ form.last_name }}
+            {% if form.last_name.errors %}
+                <p class="text-red-500 text-xs italic">{{ form.last_name.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.phone_number.id_for_label }}">
+                Phone Number
+            </label>
+            {{ form.phone_number }}
+            {% if form.phone_number.errors %}
+                <p class="text-red-500 text-xs italic">{{ form.phone_number.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.profile_picture.id_for_label }}">
+                Profile Picture
+            </label>
+            {{ form.profile_picture }}
+            {% if form.profile_picture.errors %}
+                <p class="text-red-500 text-xs italic">{{ form.profile_picture.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.user_type.id_for_label }}">
+                User Type
+            </label>
+            {{ form.user_type }}
+            {% if form.user_type.errors %}
+                <p class="text-red-500 text-xs italic">{{ form.user_type.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.is_staff.id_for_label }}">
+                Staff Status
+            </label>
+            {{ form.is_staff }}
+            {% if form.is_staff.errors %}
+                <p class="text-red-500 text-xs italic">{{ form.is_staff.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.is_superuser.id_for_label }}">
+                Superuser Status
+            </label>
+            {{ form.is_superuser }}
+            {% if form.is_superuser.errors %}
+                <p class="text-red-500 text-xs italic">{{ form.is_superuser.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.date_of_birth.id_for_label }}">
+                Date of Birth
+            </label>
+            {{ form.date_of_birth }}
+            {% if form.date_of_birth.errors %}
+                <p class="text-red-500 text-xs italic">{{ form.date_of_birth.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.address.id_for_label }}">
+                Address
+            </label>
+            {{ form.address }}
+            {% if form.address.errors %}
+                <p class="text-red-500 text-xs italic">{{ form.address.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="flex items-center justify-between">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                {% if is_edit %}Update{% else %}Create{% endif %} User
+            </button>
+            <a class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="{% url 'course_management:admin_users' %}">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

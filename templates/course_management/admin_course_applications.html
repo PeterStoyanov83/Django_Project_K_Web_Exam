@@ -3,19 +3,25 @@
 {% block title %}Course Applications - Project K{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">Course Applications</h1>
-    {% if applications %}
-        <table class="w-full bg-white shadow-md rounded-lg overflow-hidden">
-            <thead class="bg-gray-200">
+    <div class="container mx-auto px-4 mb-8">
+        <h1 class="text-3xl font-bold mb-6">Course Applications</h1>
+        <div class="mb-8">
+            <a href="{% url 'course_management:admin_panel' %}"
+               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors">
+                Back
+            </a>
+        </div>
+        {% if applications %}
+            <table class="w-full bg-white px-4shadow-md rounded-lg  overflow-hidden">
+                <thead class="bg-gray-200 ">
                 <tr>
                     <th class="px-4 py-2">User</th>
                     <th class="px-4 py-2">Course</th>
                     <th class="px-4 py-2">Status</th>
                     <th class="px-4 py-2">Actions</th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 {% for application in applications %}
                     <tr>
                         <td class="border px-4 py-2">{{ application.user.username }}</td>
@@ -23,21 +29,29 @@
                         <td class="border px-4 py-2">{{ application.status }}</td>
                         <td class="border px-4 py-2">
                             {% if application.status == 'pending' %}
-                                <a href="{% url 'course_management:approve_course_application' application.id %}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
+                                <a href="{% url 'course_management:approve_course_application' application.id %}"
+                                   class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
                                     Approve
                                 </a>
-                                <a href="{% url 'course_management:reject_course_application' application.id %}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2">
+                                <a href="{% url 'course_management:reject_course_application' application.id %}"
+                                   class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2">
                                     Reject
                                 </a>
                             {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>No course applications at the moment.</p>
-    {% endif %}
-</div>
+                </tbody>
+            </table>
+        {% else %}
+            <p>No course applications at the moment.</p>
+        {% endif %}
+        <div class="mt-8">
+            <a href="{% url 'course_management:admin_panel' %}"
+               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors">
+                Back 
+            </a>
+        </div>
+    </div>
 {% endblock %}
 
