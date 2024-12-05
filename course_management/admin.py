@@ -11,7 +11,7 @@ class TimeSlotAdmin(admin.ModelAdmin):
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ('title', 'lecturer', 'capacity')
+    list_display = ('title', 'lecturer', 'room')
     search_fields = ('title', 'lecturer__username')
 
 @admin.register(CourseSchedule)

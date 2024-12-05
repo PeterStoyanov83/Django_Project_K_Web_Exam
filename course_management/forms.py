@@ -1,24 +1,26 @@
 from django import forms
 
 from client_management.models import CustomUser, Client
-from .models import Course, Room, TimeSlot, CourseSchedule, Booking
+from .models import Course, CourseSchedule, Booking
 
 from django.forms import inlineformset_factory
-
-
 
 
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
-        fields = ['title', 'description', 'lecturer', 'capacity']
+        fields = ['title', 'description', 'lecturer', 'room']
 
     def clean(self):
         cleaned_data = super().clean()
-        capacity = cleaned_data.get('capacity')
-        if capacity is not None and capacity <= 0:
-            raise forms.ValidationError("Capacity must be a positive number.")
+        room = cleaned_data.get('room')
+        if room:
+            # Set the course capacity to match the room capacity
+            cleaned_data['capacity'] = room.capacity
+        else:
+            raise forms.ValidationError("Please select a room for the course.")
         return cleaned_data
+
 
 class CourseScheduleForm(forms.ModelForm):
     class Meta:
@@ -32,6 +34,7 @@ class CourseScheduleForm(forms.ModelForm):
         if room and course and course.capacity > room.capacity:
             raise forms.ValidationError("Course capacity cannot exceed room capacity.")
         return cleaned_data
+
 
 CourseScheduleFormSet = inlineformset_factory(
     Course,
@@ -65,6 +68,7 @@ class BookingForm(forms.ModelForm):
                 raise forms.ValidationError('You have already booked this course.')
         return cleaned_data
 
+
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(), required=False)
     confirm_password = forms.CharField(widget=forms.PasswordInput(), required=False)
@@ -94,6 +98,7 @@ class UserForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
 
 class ClientForm(forms.ModelForm):
     class Meta:

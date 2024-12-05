@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'client_management',
     'course_management',
     'pages',
+    'schedule',
 ]
 
 MIDDLEWARE = [
@@ -133,7 +134,6 @@ if not OPENAI_API_KEY:
 
 OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo')
 
-
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "static/"
 STATICFILES_DIRS = [
@@ -142,51 +142,3 @@ STATICFILES_DIRS = [
 
 ssl_context = ssl.create_default_context(cafile=certifi.where())
 EMAIL_SSL_CONTEXT = ssl_context
-# print(STATIC_URL)
-# print(STATICFILES_DIRS)
-# print(STATIC_ROOT)
-#
-#
-#
-# import logging.config
-#
-#
-# # Add this logging configuration
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'console': {
-#             'class': 'logging.StreamHandler',
-#         },
-#         'file': {
-#             'class': 'logging.FileHandler',
-#             'filename': 'django.log',
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['console', 'file'],
-#             'level': 'INFO',
-#         },
-#         'django.request': {
-#             'handlers': ['console', 'file'],
-#             'level': 'ERROR',
-#         },
-#         'django.server': {
-#             'handlers': ['console', 'file'],
-#             'level': 'INFO',
-#         },
-#         'django.template': {
-#             'handlers': ['console', 'file'],
-#             'level': 'INFO',
-#         },
-#         'django.db.backends': {
-#             'handlers': ['console', 'file'],
-#             'level': 'INFO',
-#         },
-#     },
-# }
-#
-# logging.config.dictConfig(LOGGING)
-#
