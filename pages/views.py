@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
 from django.contrib import messages
@@ -51,3 +52,11 @@ def contact(request):
         'page_title': 'Contact Us'
     }
     return render(request, 'pages/contact.html', context)
+
+
+@login_required
+def restricted_view(request):
+    context = {
+        'page_title': 'Restricted Area'
+    }
+    return render(request, '403.html', context)

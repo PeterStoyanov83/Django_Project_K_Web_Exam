@@ -209,8 +209,8 @@ def upload_file(request):
 
 
 @login_required
-def delete_file(request, pk):
-    file = get_object_or_404(ClientFile, pk=pk, client=request.user.client)
+def delete_file(request, file_id):
+    file = get_object_or_404(ClientFile, id=file_id, client=request.user.client)
     file.delete()
     messages.success(request, 'File deleted successfully.')
     return redirect('client_management:profile')
