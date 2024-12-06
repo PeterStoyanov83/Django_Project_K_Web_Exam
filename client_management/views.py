@@ -15,9 +15,12 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 
-
 @login_required
 def profile_edit(request):
+    """
+    Handles user profile editing, including user and client information updates.
+    Supports switching between 'PRIVATE' and 'BUSINESS' user types.
+    """
     try:
         client = Client.objects.get(user=request.user)
     except Client.DoesNotExist:
@@ -27,12 +30,12 @@ def profile_edit(request):
         user_form = CustomUserForm(request.POST, request.FILES, instance=request.user)
         client_form = ClientForm(request.POST, instance=client) if client else ClientForm(request.POST)
 
-        if user_form.is_valid() and (client_form.is_valid() if client else True):
+        if user_form.is_valid():
             user = user_form.save(commit=False)
             old_user_type = user.user_type
             new_user_type = user_form.cleaned_data['user_type']
 
-            # Handle user type change
+            # Handle user type changes
             if old_user_type != new_user_type:
                 user.user_type = new_user_type
                 if new_user_type == 'BUSINESS':
@@ -45,22 +48,31 @@ def profile_edit(request):
 
             user.save()
 
+            # Save client form if the user type is BUSINESS
             if client and new_user_type == 'BUSINESS':
                 if client_form.is_valid():
                     client = client_form.save(commit=False)
                     client.user = user
                     client.save()
+                else:
+                    messages.error(request, "Error saving client information.")
 
+            messages.success(request, "Profile updated successfully.")
             return redirect('client_management:profile')
+        else:
+            messages.error(request, "Error updating user profile.")
+
     else:
         user_form = CustomUserForm(instance=request.user)
         client_form = ClientForm(instance=client) if client else None
 
+    # Ensure that the GET request always returns a response
     context = {
         'user_form': user_form,
         'client_form': client_form,
     }
     return render(request, 'client_management/profile_edit.html', context)
+
 
 @login_required
 def upload_file(request):
@@ -250,4 +262,3 @@ def my_schedule(request):
         'schedules': schedules,
     }
     return render(request, 'client_management/my_schedule.html', context)
-
