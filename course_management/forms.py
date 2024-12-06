@@ -1,8 +1,6 @@
 from django import forms
-
 from client_management.models import CustomUser, Client
 from .models import Course, CourseSchedule, Booking
-
 from django.forms import inlineformset_factory
 
 
@@ -25,13 +23,13 @@ class CourseForm(forms.ModelForm):
 class CourseScheduleForm(forms.ModelForm):
     class Meta:
         model = CourseSchedule
-        fields = ['room', 'time_slot', 'date', 'status']
+        fields = ["room", "time_slot", "date", "status"]
 
     def clean(self):
         cleaned_data = super().clean()
-        room = cleaned_data.get('room')
+        room = cleaned_data.get("room")
         course = self.instance.course if self.instance else None
-        if room and course and course.capacity > room.capacity:
+        if room and course and course.room.capacity > room.capacity:
             raise forms.ValidationError("Course capacity cannot exceed room capacity.")
         return cleaned_data
 

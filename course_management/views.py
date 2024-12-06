@@ -53,43 +53,30 @@ def schedule(request):
 @login_required
 @user_passes_test(lambda u: u.is_staff)
 def course_create(request):
-    CourseScheduleFormSet = inlineformset_factory(Course, CourseSchedule, form=CourseScheduleForm, extra=1,
-                                                  can_delete=False)
-
     if request.method == 'POST':
         form = CourseForm(request.POST)
-        formset = CourseScheduleFormSet(request.POST)
-        if form.is_valid() and formset.is_valid():
+        if form.is_valid():
+            course = form.save()
+            # Fetch the time_slot object from its primary key in request.POST
             try:
-                with transaction.atomic():
-                    course = form.save()
-                    formset.instance = course
-                    formset.save()
-                if request.is_ajax():
-                    return JsonResponse({
-                        'success': True,
-                        'redirect_url': reverse('course_management:course_detail', kwargs={'pk': course.pk})
-                    })
-                messages.success(request, 'Course created successfully.')
-                return redirect('course_management:course_detail', pk=course.pk)
-            except ValidationError as e:
-                messages.error(request, str(e))
-        else:
-            if request.is_ajax():
-                return JsonResponse({
-                    'success': False,
-                    'errors': form.errors
-                })
+                time_slot_id = request.POST.get('time_slot')
+                time_slot = TimeSlot.objects.get(pk=time_slot_id)
+            except TimeSlot.DoesNotExist:
+                messages.error(request, "Invalid time slot provided.")
+                return render(request, 'course_management/course_form.html', {'form': form})
+
+            # Create a default schedule for the course
+            CourseSchedule.objects.create(
+                course=course,
+                room=form.cleaned_data.get('room'),
+                time_slot=time_slot,
+                date=request.POST.get('schedule_date'),
+                status=request.POST.get('schedule_status', 'SCHEDULED')
+            )
+            return redirect('course_management:course_detail', pk=course.pk)
     else:
         form = CourseForm()
-        formset = CourseScheduleFormSet()
-
-    context = {
-        'form': form,
-        'formset': formset,
-        'action': 'Create'
-    }
-    return render(request, 'course_management/course_form.html', context)
+    return render(request, 'course_management/course_form.html', {'form': form})
 
 
 @login_required
