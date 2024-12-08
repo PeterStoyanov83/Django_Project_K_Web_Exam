@@ -1,4 +1,3 @@
-import os
 from django.contrib.auth.decorators import login_required
 from django.core.mail import BadHeaderError, send_mail
 from django.core.validators import validate_email

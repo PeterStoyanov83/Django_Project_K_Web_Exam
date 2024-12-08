@@ -5,6 +5,8 @@ from client_management.models import CustomUser
 from django.utils import timezone
 from schedule.models.calendars import Calendar
 from schedule.models.events import Event
+from django.utils.dateparse import parse_time
+
 
 
 class Room(models.Model):
@@ -105,14 +107,22 @@ class CourseSchedule(models.Model):
             raise ValidationError(_('The course capacity exceeds the room capacity.'))
 
     def save(self, *args, **kwargs):
-        self.clean()
-        if not self.event:
-            self.event = Event.objects.create(
-                start=timezone.make_aware(timezone.datetime.combine(self.date, self.time_slot.start_time)),
-                end=timezone.make_aware(timezone.datetime.combine(self.date, self.time_slot.end_time)),
-                title=f"{self.course.title} - {self.room.name}",
-                calendar=self.course.calendar
-            )
+        # Ensure start_time and end_time are datetime.time objects
+        if isinstance(self.time_slot.start_time, str):
+            self.time_slot.start_time = parse_time(self.time_slot.start_time)
+        if isinstance(self.time_slot.end_time, str):
+            self.time_slot.end_time = parse_time(self.time_slot.end_time)
+
+        # Create a datetime object with timezone-aware times
+        start = timezone.make_aware(
+            timezone.datetime.combine(self.date, self.time_slot.start_time)
+        )
+        end = timezone.make_aware(
+            timezone.datetime.combine(self.date, self.time_slot.end_time)
+        )
+
+        self.start_time = start
+        self.end_time = end
         super().save(*args, **kwargs)
 
 
