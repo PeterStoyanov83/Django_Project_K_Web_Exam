@@ -1,8 +1,6 @@
 import os
 import ssl
 from pathlib import Path
-import anymail
-
 import certifi
 from dotenv import load_dotenv
 
@@ -126,7 +124,6 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-
 
 # OpenAI settings
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
