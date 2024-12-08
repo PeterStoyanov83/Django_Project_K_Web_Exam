@@ -1,6 +1,7 @@
 import os
 import ssl
 from pathlib import Path
+import anymail
 
 import certifi
 from dotenv import load_dotenv
@@ -30,6 +31,8 @@ INSTALLED_APPS = [
     'course_management',
     'pages',
     'schedule',
+    'anymail',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -118,14 +121,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'client_management.CustomUser'
 
 # Email Configuration
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
+EMAIL_PORT = 587
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-CONTACT_EMAIL = EMAIL_HOST_USER
+
 
 # OpenAI settings
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
