@@ -140,3 +140,4 @@ STATICFILES_DIRS = [
 
 ssl_context = ssl.create_default_context(cafile=certifi.where())
 EMAIL_SSL_CONTEXT = ssl_context
+LOGIN_URL = '/client/login/'

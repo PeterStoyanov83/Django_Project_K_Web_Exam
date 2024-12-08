@@ -27,7 +27,6 @@ class PagesViewsTest(TestCase):
 
         self.assertContains(response, 'Test Course 1')
 
-
     def test_about_view(self):
         # Test that the about view renders correctly
         response = self.client.get(reverse('pages:about'))
@@ -62,20 +61,31 @@ class PagesViewsTest(TestCase):
 
         # Check if an email was sent
         self.assertEqual(len(mail.outbox), 1)
-        self.assertIn('New contact form submission from Test User', mail.outbox[0].subject)
+        self.assertIn('contact form', mail.outbox[0].subject)
         self.assertIn('This is a test message.', mail.outbox[0].body)
 
     def test_contact_view_post_failure(self):
-        # Temporarily skip this test as the mailing system isn't working properly
-        self.skipTest("Skipping contact view post failure test due to mailing system issues.")
+        # Test the contact form submission (failure case)
+        post_data = {
+            'name': '',
+            'email': 'invalid-email',
+            'message': '',
+        }
+        response = self.client.post(reverse('pages:contact'), data=post_data)
+
+        # Ensure the form redirects on failure
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('pages:contact'))
+
+        # Verify that an error message is sent
+        messages = list(response.wsgi_request._messages)
+        self.assertEqual(len(messages), 1)
+        self.assertIn("Please fill in all fields.", str(messages[0]))
+
+        # Ensure no emails are sent
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_login_required_view(self):
-
-        try:
-            reverse('pages:restricted_view')
-        except:
-            self.skipTest("Skipping 'test_login_required_view' as 'restricted_view' is not defined.")
-
         # Test that a login-required view redirects unauthenticated users
         response = self.client.get(reverse('pages:restricted_view'))
         self.assertEqual(response.status_code, 302)
