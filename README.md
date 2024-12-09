@@ -1,5 +1,6 @@
 # Project K - IT and Business Education Platform
 
+
 ## Overview
 
 Project K is a comprehensive IT and business education platform designed to connect students with expert instructors,
@@ -126,6 +127,8 @@ yet covered the Django Web and Front-end modules in Softuni.
 
 
 ## Usage
+
+# current state - Deployment in process (in Render) 
 
 - Test users :
   - normal user (limited access)
