@@ -60,6 +60,9 @@ yet covered the Django Web and Front-end modules in Softuni.
 - View and manage bookings
 - Cancel bookings
 
+[![Full DataBase Representation](https://www.mermaidchart.com/raw/3e142088-efce-4272-90d2-f54fcff318f4?theme=light&version=v0.1&format=svg)](https://www.mermaidchart.com/raw/3e142088-efce-4272-90d2-f54fcff318f4?theme=light&version=v0.1&format=svg)
+
+
 ### Resource (Laptop) Management
 
 - Track laptops assigned to clients
