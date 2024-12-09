@@ -16,13 +16,13 @@ class CourseAdmin(admin.ModelAdmin):
 
 @admin.register(CourseSchedule)
 class CourseScheduleAdmin(admin.ModelAdmin):
-    list_display = ('course', 'room', 'time_slot', 'date', 'status')
-    list_filter = ('status', 'date', 'room')
+    list_display = ('course', 'room', 'time_slot', 'start_date', 'status')
+    list_filter = ('status', 'start_date', 'room')
     search_fields = ('course__title', 'room__name')
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
     list_display = ('user', 'course_schedule', 'booking_date')
-    list_filter = ('course_schedule__date', 'booking_date')
+    list_filter = ('course_schedule__start_date', 'booking_date')
     search_fields = ('user__username', 'course_schedule__course__title')
 

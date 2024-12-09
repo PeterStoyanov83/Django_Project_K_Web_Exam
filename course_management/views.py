@@ -53,73 +53,41 @@ def schedule(request):
 @login_required
 @user_passes_test(lambda u: u.is_staff)
 def course_create(request):
+    CourseScheduleFormSet = inlineformset_factory(Course, CourseSchedule, form=CourseScheduleForm, extra=1)
     if request.method == 'POST':
         form = CourseForm(request.POST)
-        if form.is_valid():
+        schedule_formset = CourseScheduleFormSet(request.POST)
+        if form.is_valid() and schedule_formset.is_valid():
             course = form.save()
-            # Fetch the time_slot object from its primary key in request.POST
-            try:
-                time_slot_id = request.POST.get('time_slot')
-                time_slot = TimeSlot.objects.get(pk=time_slot_id)
-            except TimeSlot.DoesNotExist:
-                messages.error(request, "Invalid time slot provided.")
-                return render(request, 'course_management/course_form.html', {'form': form})
-
-            # Create a default schedule for the course
-            CourseSchedule.objects.create(
-                course=course,
-                room=form.cleaned_data.get('room'),
-                time_slot=time_slot,
-                date=request.POST.get('schedule_date'),
-                status=request.POST.get('schedule_status', 'SCHEDULED')
-            )
+            schedules = schedule_formset.save(commit=False)
+            for schedule in schedules:
+                schedule.course = course
+                schedule.save()
+            messages.success(request, 'Course created successfully.')
             return redirect('course_management:course_detail', pk=course.pk)
     else:
         form = CourseForm()
-    return render(request, 'course_management/course_form.html', {'form': form})
+        schedule_formset = CourseScheduleFormSet()
+    return render(request, 'course_management/course_form.html', {'form': form, 'schedule_formset': schedule_formset})
 
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
 def course_update(request, pk):
     course = get_object_or_404(Course, pk=pk)
-    CourseScheduleFormSet = inlineformset_factory(Course, CourseSchedule, form=CourseScheduleForm, extra=1,
-                                                  can_delete=True)
-
+    CourseScheduleFormSet = inlineformset_factory(Course, CourseSchedule, form=CourseScheduleForm, extra=1, can_delete=True)
     if request.method == 'POST':
         form = CourseForm(request.POST, instance=course)
-        formset = CourseScheduleFormSet(request.POST, instance=course)
-        if form.is_valid() and formset.is_valid():
-            try:
-                with transaction.atomic():
-                    form.save()
-                    formset.save()
-                if request.is_ajax():
-                    return JsonResponse({
-                        'success': True,
-                        'redirect_url': reverse('course_management:course_detail', kwargs={'pk': course.pk})
-                    })
-                messages.success(request, 'Course updated successfully.')
-                return redirect('course_management:course_detail', pk=course.pk)
-            except ValidationError as e:
-                messages.error(request, str(e))
-        else:
-            if request.is_ajax():
-                return JsonResponse({
-                    'success': False,
-                    'errors': form.errors
-                })
+        schedule_formset = CourseScheduleFormSet(request.POST, instance=course)
+        if form.is_valid() and schedule_formset.is_valid():
+            form.save()
+            schedule_formset.save()
+            messages.success(request, 'Course updated successfully.')
+            return redirect('course_management:course_detail', pk=course.pk)
     else:
         form = CourseForm(instance=course)
-        formset = CourseScheduleFormSet(instance=course)
-
-    context = {
-        'form': form,
-        'formset': formset,
-        'course': course,
-        'action': 'Update'
-    }
-    return render(request, 'course_management/course_form.html', context)
+        schedule_formset = CourseScheduleFormSet(instance=course)
+    return render(request, 'course_management/course_form.html', {'form': form, 'schedule_formset': schedule_formset, 'course': course})
 
 
 @staff_member_required
@@ -158,67 +126,6 @@ def apply_for_course(request, course_id):
     return redirect('course_management:course_detail', pk=course_id)
 
 
-@login_required
-def course_create(request):
-    if request.method == 'POST':
-        form = CourseForm(request.POST)
-        if form.is_valid():
-            course = form.save()
-            # Create a default schedule for the course
-            CourseSchedule.objects.create(
-                course=course,
-                room=form.cleaned_data.get('room'),
-                time_slot=form.cleaned_data.get('time_slot'),
-                date=form.cleaned_data.get('schedule_date'),
-                status='SCHEDULED'
-            )
-            return redirect('course_management:course_detail', pk=course.pk)
-    else:
-        form = CourseForm()
-    return render(request, 'course_management/course_form.html', {'form': form})
-
-
-@login_required
-@user_passes_test(lambda u: u.is_staff)
-def course_update(request, pk):
-    course = get_object_or_404(Course, pk=pk)
-    if request.method == 'POST':
-        form = CourseForm(request.POST, instance=course)
-        if form.is_valid():
-            updated_course = form.save()
-            room = form.cleaned_data.get('room')
-            time_slot = form.cleaned_data.get('time_slot')
-            schedule_status = form.cleaned_data.get('schedule_status')
-            schedule_date = form.cleaned_data.get('schedule_date')
-
-            if room and time_slot and schedule_date:
-                latest_schedule, created = CourseSchedule.objects.get_or_create(
-                    course=updated_course,
-                    date=schedule_date,
-                    defaults={
-                        'room': room,
-                        'time_slot': time_slot,
-                        'status': schedule_status or 'SCHEDULED'
-                    }
-                )
-                if not created:
-                    latest_schedule.room = room
-                    latest_schedule.time_slot = time_slot
-                    latest_schedule.status = schedule_status or latest_schedule.status
-                    latest_schedule.save()
-
-            messages.success(request, 'Course updated successfully.')
-            return redirect('course_management:course_detail', pk=updated_course.pk)
-    else:
-        form = CourseForm(instance=course)
-
-    context = {
-        'form': form,
-        'course': course,
-        'action': 'Update'
-    }
-    return render(request, 'course_management/course_form.html', context)
-
 
 @login_required
 def course_delete(request, pk):
@@ -243,7 +150,7 @@ def schedule_create(request, course_pk):
             return redirect('course_management:course_detail', pk=course.pk)
     else:
         form = CourseScheduleForm()
-    return render(request, '../templates/course_management/schedule_form.html', {'form': form, 'course': course})
+    return render(request, 'course_management/schedule_form.html', {'form': form, 'course': course})
 
 
 @login_required
@@ -296,7 +203,8 @@ def booking_list(request):
 def booking_cancel(request, pk):
     booking = get_object_or_404(Booking, pk=pk, user=request.user)
     if request.method == 'POST':
-        booking.delete()
+        booking.status = 'cancelled'
+        booking.save()
         messages.success(request, 'Booking cancelled successfully.')
         return redirect('course_management:booking_list')
     return render(request, 'course_management/booking_confirm_cancel.html', {'booking': booking})
@@ -360,18 +268,6 @@ def admin_courses(request):
         'courses': courses,
     }
     return render(request, 'course_management/admin_courses.html', context)
-
-
-@user_passes_test(lambda u: u.is_staff)
-def admin_lecturers(request):
-    # Placeholder view for lecturers list
-    return render(request, 'course_management/admin_lecturers.html')
-
-
-@user_passes_test(lambda u: u.is_staff)
-def admin_users(request):
-    # Placeholder view for users list
-    return render(request, 'course_management/admin_users.html')
 
 
 @user_passes_test(lambda u: u.is_staff)
@@ -452,3 +348,4 @@ def user_edit(request, pk):
         'user': user,
     }
     return render(request, 'course_management/user_form.html', context)
+

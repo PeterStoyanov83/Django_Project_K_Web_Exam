@@ -1,20 +1,51 @@
-# Code Coverage Report
+# Test Coverage Report
 
-| File                             | Stmts   | Miss   | Cover   | Missing                                    |
-|----------------------------------|---------|--------|---------|--------------------------------------------|
-| client_management/__init__.py   | 0       | 0      | 100%    |                                            |
-| client_management/admin.py      | 11      | 0      | 100%    |                                            |
-| client_management/apps.py       | 4       | 0      | 100%    |                                            |
-| client_management/models.py     | 58      | 12     | 79%     | 18, 22-25, 28, 41, 54, 57-59, 80           |
-| course_management/__init__.py   | 0       | 0      | 100%    |                                            |
-| course_management/admin.py      | 22      | 0      | 100%    |                                            |
-| course_management/apps.py       | 4       | 0      | 100%    |                                            |
-| course_management/models.py     | 91      | 23     | 75%     | 19, 35, 38-41, 44, 47-49, 72, 94, 97-105, 108-116, 131, 146 |
-| manage.py                       | 13      | 2      | 85%     | 13-14                                     |
-| pages/__init__.py               | 0       | 0      | 100%    |                                            |
-| pages/admin.py                  | 1       | 0      | 100%    |                                            |
-| pages/apps.py                   | 4       | 0      | 100%    |                                            |
-| pages/models.py                 | 1       | 0      | 100%    |                                            |
-| project_k/__init__.py           | 0       | 0      | 100%    |                                            |
-| project_k/settings.py           | 44      | 1      | 98%     | 131                                        |
-|<br/>**TOTAL**                        | **253** | **38** | **85%** |                                            |
+| Name                                                                                               | Stmts | Miss | Cover |
+|----------------------------------------------------------------------------------------------------|-------|------|-------|
+| api/openai_assistant.py                                                                           |    35 |   24 |    31% |
+| client_management/__init__.py                                                                     |     0 |    0 |   100% |
+| client_management/admin.py                                                                        |    11 |    0 |   100% |
+| client_management/apps.py                                                                         |     4 |    0 |   100% |
+| client_management/forms.py                                                                        |    34 |    0 |   100% |
+| client_management/migrations/0001_initial.py                                                     |    10 |    0 |   100% |
+| client_management/migrations/0002_alter_customuser_email.py                                       |     4 |    0 |   100% |
+| client_management/migrations/0003_alter_clientfile_options.py                                    |     4 |    0 |   100% |
+| client_management/migrations/0004_clientfile_uploaded_by_alter_clientfile_client.py              |     6 |    0 |   100% |
+| client_management/migrations/0005_customuser_user_type.py                                        |     4 |    0 |   100% |
+| client_management/migrations/0006_alter_customuser_options_alter_client_company_name_and_more.py |     5 |    0 |   100% |
+| client_management/migrations/__init__.py                                                         |     0 |    0 |   100% |
+| client_management/models.py                                                                      |    58 |    2 |    97% |
+| client_management/test_auth.py                                                                   |    47 |    1 |    98% |
+| client_management/test_forms.py                                                                  |    11 |    0 |   100% |
+| client_management/test_models.py                                                                 |    69 |    0 |   100% |
+| client_management/test_views.py                                                                  |    43 |    0 |   100% |
+| client_management/urls.py                                                                        |     6 |    0 |   100% |
+| client_management/views.py                                                                       |   182 |   70 |    62% |
+| course_management/__init__.py                                                                    |     0 |    0 |   100% |
+| course_management/admin.py                                                                       |    22 |    0 |   100% |
+| course_management/apps.py                                                                        |     4 |    0 |   100% |
+| course_management/forms.py                                                                       |    46 |    4 |    91% |
+| course_management/migrations/0001_initial.py                                                    |     9 |    0 |   100% |
+| course_management/migrations/0002_alter_courseschedule_end_date.py                               |     5 |    0 |   100% |
+| course_management/migrations/0003_alter_courseschedule_days_of_week_and_more.py                  |     4 |    0 |   100% |
+| course_management/migrations/__init__.py                                                        |     0 |    0 |   100% |
+| course_management/models.py                                                                     |   111 |    7 |    94% |
+| course_management/test_forms.py                                                                 |    62 |    5 |    92% |
+| course_management/test_models.py                                                                |   109 |    0 |   100% |
+| course_management/test_views.py                                                                 |   117 |    0 |   100% |
+| course_management/urls.py                                                                       |     4 |    0 |   100% |
+| course_management/views.py                                                                      |   239 |   95 |    60% |
+| manage.py                                                                                        |    13 |    2 |    85% |
+| pages/__init__.py                                                                                |     0 |    0 |   100% |
+| pages/admin.py                                                                                   |     1 |    0 |   100% |
+| pages/apps.py                                                                                    |     4 |    0 |   100% |
+| pages/migrations/__init__.py                                                                     |     0 |    0 |   100% |
+| pages/models.py                                                                                  |     1 |    0 |   100% |
+| pages/tests.py                                                                                   |    53 |    0 |   100% |
+| pages/urls.py                                                                                    |     4 |    0 |   100% |
+| pages/views.py                                                                                   |    60 |   13 |    78% |
+| project_k/__init__.py                                                                            |     0 |    0 |   100% |
+| project_k/middleware.py                                                                          |    14 |    0 |   100% |
+| project_k/settings.py                                                                            |    44 |    1 |    98% |
+| project_k/urls.py                                                                                |    10 |    0 |   100% |
+| **TOTAL**                                                                                       | **1469** | **224** | **85%** |

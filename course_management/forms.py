@@ -1,46 +1,51 @@
 from django import forms
-from client_management.models import CustomUser, Client
+from django.utils.translation import gettext_lazy as _
 from .models import Course, CourseSchedule, Booking
-from django.forms import inlineformset_factory
+from client_management.models import CustomUser
 
 
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
-        fields = ['title', 'description', 'lecturer', 'room']
-
-    def clean(self):
-        cleaned_data = super().clean()
-        room = cleaned_data.get('room')
-        if room:
-            # Set the course capacity to match the room capacity
-            cleaned_data['capacity'] = room.capacity
-        else:
-            raise forms.ValidationError("Please select a room for the course.")
-        return cleaned_data
+        fields = ['title', 'description', 'lecturer', 'room', 'capacity']
 
 
 class CourseScheduleForm(forms.ModelForm):
+    days_of_week = forms.MultipleChoiceField(
+        choices=[
+            (0, _('Monday')),
+            (1, _('Tuesday')),
+            (2, _('Wednesday')),
+            (3, _('Thursday')),
+            (4, _('Friday')),
+            (5, _('Saturday')),
+            (6, _('Sunday'))
+        ],
+        widget=forms.CheckboxSelectMultiple,
+        required=True
+    )
+
     class Meta:
         model = CourseSchedule
-        fields = ["room", "time_slot", "date", "status"]
+        fields = ['course', 'room', 'time_slot', 'start_date', 'end_date', 'days_of_week', 'status']
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'type': 'date'}),
+        }
 
     def clean(self):
         cleaned_data = super().clean()
-        room = cleaned_data.get("room")
-        course = self.instance.course if self.instance else None
-        if room and course and course.room.capacity > room.capacity:
-            raise forms.ValidationError("Course capacity cannot exceed room capacity.")
+        start_date = cleaned_data.get('start_date')
+        end_date = cleaned_data.get('end_date')
+        days = cleaned_data.get('days_of_week')
+
+        if start_date and end_date and start_date > end_date:
+            raise forms.ValidationError(_("End date must be after start date."))
+
+        if days:
+            cleaned_data['days_of_week'] = ','.join(days)
+
         return cleaned_data
-
-
-CourseScheduleFormSet = inlineformset_factory(
-    Course,
-    CourseSchedule,
-    form=CourseScheduleForm,
-    extra=1,
-    can_delete=True
-)
 
 
 class BookingForm(forms.ModelForm):
@@ -48,35 +53,22 @@ class BookingForm(forms.ModelForm):
         model = Booking
         fields = ['course_schedule']
 
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        super().__init__(*args, **kwargs)
-        if self.user:
-            self.fields['course_schedule'].queryset = CourseSchedule.objects.filter(status='SCHEDULED')
-
     def clean(self):
         cleaned_data = super().clean()
-        course_schedule = cleaned_data.get('course_schedule')
-        if course_schedule:
-            if course_schedule.status != 'SCHEDULED':
-                raise forms.ValidationError('This course is no longer available for booking.')
-            if course_schedule.bookings.count() >= course_schedule.course.capacity:
-                raise forms.ValidationError('This course is fully booked.')
-            if Booking.objects.filter(course_schedule=course_schedule, user=self.user).exists():
-                raise forms.ValidationError('You have already booked this course.')
+        if not cleaned_data.get('course_schedule'):
+            raise forms.ValidationError(_('Course schedule is required.'))
         return cleaned_data
 
 
 class UserForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput(), required=False)
-    confirm_password = forms.CharField(widget=forms.PasswordInput(), required=False)
+    confirm_password = forms.CharField(widget=forms.PasswordInput())
 
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'first_name', 'last_name', 'phone_number',
-                  'profile_picture', 'user_type', 'is_staff', 'is_superuser',
-                  'date_of_birth', 'address']
+        fields = ['username', 'email', 'password', 'confirm_password', 'first_name', 'last_name', 'phone_number',
+                  'user_type', 'date_of_birth', 'address']
         widgets = {
+            'password': forms.PasswordInput(),
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
         }
 
@@ -88,17 +80,4 @@ class UserForm(forms.ModelForm):
         if password and confirm_password and password != confirm_password:
             raise forms.ValidationError("Passwords do not match")
 
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        password = self.cleaned_data.get('password')
-        if password:
-            user.set_password(password)
-        if commit:
-            user.save()
-        return user
-
-
-class ClientForm(forms.ModelForm):
-    class Meta:
-        model = Client
-        fields = ['company_name', 'industry']
+        return cleaned_data

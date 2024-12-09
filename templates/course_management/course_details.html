@@ -1,25 +1,109 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ course.title }} - Project K{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="../../static/css/schedule.css">
+    <script src="../../static/js/schedule.js"></script>
+{% endblock %}
 
 {% block content %}
-  <h1>{{ course.title }}</h1>
-  <p>{{ course.description }}</p>
-  <p>Lecturer: {{ course.lecturer }}</p>
-  <p>Capacity: {{ course.capacity }}</p>
-  
-  <h2>Schedules</h2>
-  <a href="{% url 'schedule_create' course.pk %}">Add Schedule</a>
-  <ul>
-    {% for schedule in schedules %}
-      <li>
-        {{ schedule.date }} {{ schedule.time_slot }} - {{ schedule.room }}
-        <a href="{% url 'schedule_update' schedule.pk %}">Edit</a>
-        <a href="{% url 'schedule_delete' schedule.pk %}">Delete</a>
-      </li>
-    {% empty %}
-      <li>No schedules available.</li>
-    {% endfor %}
-  </ul>
-  
-  <a href="{% url 'course_update' course.pk %}">Edit Course</a>
-  <a href="{% url 'course_delete' course.pk %}">Delete Course</a>
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <div class="p-6">
+            <h1 class="text-3xl font-bold mb-4">{{ course.title }}</h1>
+            <p class="text-gray-600 mb-4">{{ course.description }}</p>
+            <div class="mb-4">
+                <strong class="text-gray-700">Lecturer:</strong> {{ course.lecturer.get_full_name }}
+            </div>
+            <div class="mb-4">
+                <strong class="text-gray-700">Capacity:</strong> {{ course.capacity }} students
+            </div>
+            <div class="mb-4">
+                <strong class="text-gray-700">Available Seats:</strong> {{ course.available_seats }}
+            </div>
+            
+            {% if user.is_staff %}
+                <div class="mb-4">
+                    <strong class="text-gray-700">Current Schedule Status:</strong>
+                    {% with latest_schedule=course.schedules.latest %}
+                        {% if latest_schedule %}
+                            <span class="ml-2 px-2 py-1 text-sm font-semibold rounded
+                                {% if latest_schedule.event.start > now %}bg-green-100 text-green-800
+                                {% elif latest_schedule.event.end < now %}bg-red-100 text-red-800
+                                {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                {% if latest_schedule.event.start > now %}
+                                    Upcoming
+                                {% elif latest_schedule.event.end < now %}
+                                    Completed
+                                {% else %}
+                                    In Progress
+                                {% endif %}
+                            </span>
+                        {% else %}
+                            <span class="ml-2 text-gray-500">No schedule available</span>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+                {% if user_application %}
+                    {% if user_application.status == 'pending' %}
+                        <p class="text-yellow-600">Your application for this course is pending.</p>
+                    {% elif user_application.status == 'approved' %}
+                        <p class="text-green-600">Your application for this course has been approved.</p>
+                    {% elif user_application.status == 'rejected' %}
+                        <p class="text-red-600">Your application for this course has been rejected.</p>
+                    {% endif %}
+                {% elif course.is_full %}
+                    <p class="text-red-600">This course is currently full.</p>
+                {% else %}
+                    <a href="{% url 'course_management:apply_for_course' course.id %}" 
+                       class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Apply for Course
+                    </a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'client_management:login' %}?next={% url 'course_management:apply_for_course' course.id %}" 
+                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Login to Apply
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="bg-gray-100 p-6">
+    <h2 class="text-2xl font-bold mb-4">Course Schedules</h2>
+    {% if course.schedules.all %}
+        <div class="grid gap-4">
+            {% for schedule in course.schedules.all %}
+                <div class="bg-white p-4 rounded-md shadow">
+                    <p class="font-semibold">{{ schedule.start_date|date:"F d, Y" }} to {{ schedule.end_date|date:"F d, Y" }}</p>
+                    <p>Room: {{ schedule.room.name }}</p>
+                    <p>Time: {{ schedule.time_slot }}</p>
+                    <p>Days: {{ schedule.get_days_display }}</p>
+                    <p>Status: {{ schedule.get_status_display }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-gray-600">No schedules available for this course.</p>
+    {% endif %}
+</div>
+
+        {% if user.is_staff %}
+            <div class="p-6 bg-gray-50 border-t">
+                <a href="{% url 'course_management:course_update' course.pk %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
+                    Edit Course
+                </a>
+                <a href="{% url 'course_management:course_delete' course.pk %}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                    Delete Course
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
 {% endblock %}
+

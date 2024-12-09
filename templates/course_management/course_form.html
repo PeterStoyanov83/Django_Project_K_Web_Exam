@@ -4,8 +4,8 @@
 {% block title %}{{ action }} Course - Project K{% endblock %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="../../static/schedule/css/schedule.css'">
-    <script src="../../static/schedule/js/schedule.js"></script>
+    <link rel="stylesheet" href="../../static/css/schedule.css">
+    <script src="../../static/js/schedule.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -21,7 +21,7 @@
                 
                 <!-- Course Details Section -->
                 <div class="space-y-6">
-                    <h2 class="text-xl font-semibold text-gray-900">Course Details </h2>
+                    <h2 class="text-xl font-semibold text-gray-900">Course Details</h2>
                     <div class="grid gap-6">
                         <!-- Course Title Field -->
                         <div>
@@ -82,39 +82,10 @@
                                         {{ schedule_form.room }}
                                     </div>
 
-                                    <!-- Status Selection -->
+                                    <!-- Time Slot Selection -->
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                                        {{ schedule_form.status }}
-                                    </div>
-                                </div>
-
-                                <!-- Schedule Days Selection -->
-                                <div class="mt-4">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Schedule Days</label>
-                                    <div class="grid grid-cols-7 gap-2">
-                                        {% for day in "MTWHFSS" %}
-                                            <label class="flex items-center justify-center p-2 border rounded cursor-pointer hover:bg-gray-100">
-                                                <input type="checkbox" name="schedule_days" value="{{ day }}" class="hidden schedule-day-checkbox">
-                                                <span class="text-sm">{{ day }}</span>
-                                            </label>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-
-                                <!-- Time Selection -->
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
-                                        <label>
-                                            <input type="time" name="start_time" class="w-full border-gray-300 rounded-md shadow-sm">
-                                        </label>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">End Time</label>
-                                        <label>
-                                            <input type="time" name="end_time" class="w-full border-gray-300 rounded-md shadow-sm">
-                                        </label>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Time Slot</label>
+                                        {{ schedule_form.time_slot }}
                                     </div>
                                 </div>
 
@@ -122,16 +93,24 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                                        <label>
-                                            <input type="date" name="start_date" class="w-full border-gray-300 rounded-md shadow-sm">
-                                        </label>
+                                        {{ schedule_form.start_date }}
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                                        <label>
-                                            <input type="date" name="end_date" class="w-full border-gray-300 rounded-md shadow-sm">
-                                        </label>
+                                        {{ schedule_form.end_date }}
                                     </div>
+                                </div>
+
+                                <!-- Days of Week Selection -->
+                                <div class="mt-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Schedule Days</label>
+                                    {{ schedule_form.days_of_week }}
+                                </div>
+
+                                <!-- Status Selection -->
+                                <div class="mt-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                    {{ schedule_form.status }}
                                 </div>
 
                                 {% if schedule_form.can_delete %}
@@ -240,7 +219,7 @@
             const start = new Date(startDate);
             const end = new Date(endDate);
             const dayMap = {
-                'M': 1, 'T': 2, 'W': 3, 'H': 4, 'F': 5, 'Sa': 6, 'Su': 0
+                'M': 1, 'T': 2, 'W': 3, 'H': 4, 'F': 5, 'SAT': 6, 'SUN': 0
             };
 
             while (start <= end) {

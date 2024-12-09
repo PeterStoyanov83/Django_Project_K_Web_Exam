@@ -3,25 +3,34 @@ from client_management.models import Client, Laptop, ClientFile, CustomUser
 from datetime import date
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
-
 from django.test import TestCase
 
 User = get_user_model()
 
-
 class ClientModelTest(TestCase):
     def setUp(self):
-        self.user = User.objects.create(username="testuser", email="test@example.com", user_type="BUSINESS")
-        self.client = Client.objects.create(user=self.user, company_name="Test Company", industry="Technology")
+        self.user = User.objects.create(
+            username="testuser",
+            email="test@example.com",
+            user_type="BUSINESS"
+        )
+        self.client = Client.objects.create(
+            user=self.user,
+            company_name="Test Company",
+            industry="Technology"
+        )
 
     def test_client_str(self):
         self.assertEqual(str(self.client), "Test Company")
 
-
 class LaptopModelTest(TestCase):
     def setUp(self):
         self.user = User.objects.create(username="testuser")
-        self.client = Client.objects.create(user=self.user, company_name="Test Company", industry="Technology")
+        self.client = Client.objects.create(
+            user=self.user,
+            company_name="Test Company",  # Fixed typo here
+            industry="Technology"
+        )
         self.laptop = Laptop.objects.create(
             client=self.client,
             brand="Dell",
@@ -35,33 +44,47 @@ class LaptopModelTest(TestCase):
     def test_laptop_str(self):
         self.assertEqual(str(self.laptop), "Dell XPS - 12345")
 
-
 class ClientFileModelTest(TestCase):
     def setUp(self):
         self.user = User.objects.create(username="testuser")
-        self.client = Client.objects.create(user=self.user, company_name="Test Company", industry="Technology")
+        self.client = Client.objects.create(
+            user=self.user,
+            company_name="Test Company",
+            industry="Technology"
+        )
         self.file = ClientFile.objects.create(client=self.client, file="test_file.pdf")
 
     def test_client_file_str(self):
         expected_str_start = "test_file.pdf - "
         actual_str = str(self.file)
-        self.assertTrue(actual_str.startswith(expected_str_start),
-                        f"Expected string to start with {expected_str_start}, but got {actual_str}")
-
+        self.assertTrue(
+            actual_str.startswith(expected_str_start),
+            f"Expected string to start with {expected_str_start}, but got {actual_str}")
 
 class FileUploadTests(TestCase):
     def setUp(self):
         self.user = CustomUser.objects.create_user(
-            username="testuser", password="password123", email="test@example.com"
+            username="testuser",
+            password="password123",
+            email="test@example.com"
         )
-        self.client.login(username="testuser", password="password123")
+        self.client.login(
+            username="testuser",
+            password="password123"
+        )
         self.client_profile = Client.objects.create(
-            user=self.user, company_name="Test Company", industry="IT"
+            user=self.user,
+            company_name="Test Company",
+            industry="IT"
         )
         self.upload_url = reverse('client_management:upload_file')
 
     def test_successful_file_upload(self):
-        file_data = SimpleUploadedFile("test.txt", b"Hello, world!", content_type="text/plain")
+        file_data = SimpleUploadedFile(
+            "test.txt",
+            b"Hello, world!",
+            content_type="text/plain"
+        )
         response = self.client.post(self.upload_url, {'file': file_data})
 
         # Check redirect after successful upload
@@ -120,3 +143,4 @@ class FileUploadTests(TestCase):
         # Ensure the response is forbidden
         self.assertEqual(response.status_code, 404)
         self.assertTrue(ClientFile.objects.filter(id=client_file.id).exists())
+
