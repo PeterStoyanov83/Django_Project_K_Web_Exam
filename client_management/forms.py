@@ -17,17 +17,36 @@ class CustomAuthenticationForm(AuthenticationForm):
 class CustomUserForm(forms.ModelForm):
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'first_name', 'last_name', 'phone_number', 'profile_picture', 'user_type',
-                  'date_of_birth', 'address']
+        fields = [
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'phone_number',
+            'profile_picture',
+            'user_type',
+            'date_of_birth',
+            'address'
+        ]
         widgets = {
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
         }
 
+
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'first_name', 'last_name', 'phone_number', 'profile_picture',
-                  'user_type']
+        fields = [
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'phone_number',
+            'profile_picture',
+            'user_type',
+            'company_name',
+            'industry'
+        ]
         widgets = {
             'user_type': forms.Select(attrs={'class': 'form-control'}),
         }
@@ -37,6 +56,7 @@ class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
         fields = ['company_name', 'industry']
+
 
 class LaptopForm(forms.ModelForm):
     class Meta:
@@ -48,10 +68,9 @@ class LaptopForm(forms.ModelForm):
         }
 
 
-class ClientFileForm(forms.ModelForm):
-    class Meta:
-        model = ClientFile
-        fields = ['file']
-        widgets = {
-            'file': forms.FileInput(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'}),
-        }
+class ClientFileForm(forms.Form):
+    file = forms.FileField(
+        label='Upload File',
+        required=False,
+        widget=forms.ClearableFileInput(attrs={'multiple': False})
+    )

@@ -73,6 +73,16 @@
                         <p class="text-gray-600 text-sm">Address:</p>
                         <p class="font-medium">{{ user.address|default:"Not provided" }}</p>
                     </div>
+                    {% if user.user_type == 'BUSINESS' %}
+                        <div>
+                            <p class="text-gray-600 text-sm">Company Name:</p>
+                            <p class="font-medium">{{ user.company_name|default:"Not provided" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 text-sm">Industry:</p>
+                            <p class="font-medium">{{ user.industry|default:"Not provided" }}</p>
+                        </div>
+                    {% endif %}
                     {% if user.user_type == 'BUSINESS' and client %}
                         <div>
                             <p class="text-gray-600 text-sm">Company Name:</p>

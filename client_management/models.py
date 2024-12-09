@@ -2,48 +2,23 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractUser
 
+
 class CustomUser(AbstractUser):
-    phone_number = models.CharField(
-        max_length=20,
-        blank=True,
-        null=True
-    )
-    profile_picture = models.ImageField(
-        upload_to='profile_pictures/',
-        blank=True,
-        null=True
-    )
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     user_type = models.CharField(
         max_length=10,
-        choices=[('PRIVATE', 'Private'),
-                 ('BUSINESS', 'Business')
-                 ],
+        choices=[('PRIVATE', 'Private'), ('BUSINESS', 'Business')],
         default='PRIVATE'
     )
-    address = models.TextField(
-        _("Address"),
-        blank=True
-    )
-    date_of_birth = models.DateField(
-        _("Date of Birth"),
-        null=True,
-        blank=True)
-    email = models.EmailField(
-        _("email address")
-    )
+    address = models.TextField(_("Address"), blank=True)
+    date_of_birth = models.DateField(_("Date of Birth"), null=True, blank=True)
+    company_name = models.CharField(max_length=100, blank=True, null=True)
+    industry = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.username
 
-    @property
-    def client(self):
-        try:
-            return self.client_profile
-        except Client.DoesNotExist:
-            return None
-
-    def is_client(self):
-        return hasattr(self, 'client_profile')
 
 class Client(models.Model):
     user = models.OneToOneField(
@@ -65,21 +40,12 @@ class Client(models.Model):
     def __str__(self):
         return self.company_name
 
+
 class ClientFile(models.Model):
-    client = models.ForeignKey(
-        Client,
-        on_delete=models.CASCADE,
-        related_name='files'
-    )
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='files')
     file = models.FileField(upload_to='client_files/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    uploaded_by = models.ForeignKey(
-        CustomUser,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='uploaded_files'
-    )
+    uploaded_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='uploaded_files')
 
     class Meta:
         verbose_name = _("Client File")
@@ -88,10 +54,6 @@ class ClientFile(models.Model):
     def __str__(self):
         return f"{self.file.name} - {self.uploaded_at}"
 
-    def save(self, *args, **kwargs):
-        if not self.client:
-            raise ValueError("A client must be specified for each file.")
-        super().save(*args, **kwargs)
 
 class Laptop(models.Model):
     STATUS_CHOICES = [
@@ -125,4 +87,3 @@ class Laptop(models.Model):
 
     def __str__(self):
         return f"{self.brand} {self.model} - {self.serial_number}"
-
