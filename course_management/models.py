@@ -6,14 +6,12 @@ from django.utils import timezone
 from schedule.models import Calendar, Event
 from datetime import datetime, time
 
-
 class Course(models.Model):
     title = models.CharField(_("Title"), max_length=200)
     description = models.TextField(_("Description"))
-    lecturer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='courses_taught',
-                                 verbose_name=_("Lecturer"))
+    lecturer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='courses_taught', verbose_name=_("Lecturer"))
     room = models.ForeignKey('Room', on_delete=models.SET_NULL, null=True, blank=True, related_name='courses')
-    calendar = models.OneToOneField(Calendar, on_delete=models.SET_NULL, null=True, blank=True)
+    calendar = models.OneToOneField('schedule.Calendar', on_delete=models.SET_NULL, null=True, blank=True)
     capacity = models.PositiveIntegerField(_("Capacity"), default=20)
 
     class Meta:
@@ -33,10 +31,19 @@ class Course(models.Model):
         return self.available_seats() == 0
 
     def save(self, *args, **kwargs):
-        if not self.calendar:
-            self.calendar = Calendar.objects.create(name=f"Calendar for {self.title}")
+        is_new = self._state.adding
         super().save(*args, **kwargs)
-
+        if is_new or not self.calendar:
+            from schedule.models import Calendar
+            slug = f"course-{self.id}-calendar"
+            self.calendar, created = Calendar.objects.get_or_create(
+                slug=slug,
+                defaults={'name': f"Calendar for {self.title}"}
+            )
+            if not created:
+                self.calendar.name = f"Calendar for {self.title}"
+                self.calendar.save()
+            super().save(update_fields=['calendar'])
 
 class TimeSlot(models.Model):
     DAY_CHOICES = [
@@ -60,14 +67,12 @@ class TimeSlot(models.Model):
     def __str__(self):
         return f"{self.get_day_display()} {self.start_time.strftime('%H:%M')} - {self.end_time.strftime('%H:%M')}"
 
-
 class Room(models.Model):
     name = models.CharField(_("Name"), max_length=100)
     capacity = models.PositiveIntegerField(_("Capacity"))
 
     def __str__(self):
         return f"{self.name} (Capacity: {self.capacity})"
-
 
 class CourseSchedule(models.Model):
     STATUS_CHOICES = [
@@ -80,11 +85,9 @@ class CourseSchedule(models.Model):
     time_slot = models.ForeignKey(TimeSlot, on_delete=models.CASCADE, verbose_name=_("Time Slot"))
     start_date = models.DateField(_("Start Date"), default=timezone.now)
     end_date = models.DateField(_("End Date"))
-    days_of_week = models.CharField(_("Days of Week"), max_length=20,
-                                    help_text="Comma-separated list of weekday numbers (0-6)")
+    days_of_week = models.CharField(_("Days of Week"), max_length=20, help_text="Comma-separated list of weekday numbers (0-6)")
     status = models.CharField(_("Status"), max_length=20, choices=STATUS_CHOICES, default='SCHEDULED')
     event = models.OneToOneField(Event, on_delete=models.SET_NULL, null=True, blank=True)
-    capacity = Room.capacity
 
     class Meta:
         verbose_name = _("Course Schedule")
@@ -95,9 +98,10 @@ class CourseSchedule(models.Model):
         return f"{self.course.title} - {self.start_date} to {self.end_date}"
 
     def clean(self):
-        if self.room and hasattr(self.room, 'capacity') and self.course and hasattr(self.course, 'capacity') and self.room.capacity < self.course.capacity:
-            raise ValidationError("Room capacity must be greater than or equal to course capacity.")
-
+        if self.start_date and self.end_date and self.start_date > self.end_date:
+            raise ValidationError(_('End date must be after start date.'))
+        if self.room and self.course and self.room.capacity < self.course.capacity:
+            raise ValidationError(_('The room capacity is less than the course capacity.'))
 
     def save(self, *args, **kwargs):
         self.clean()
@@ -125,12 +129,11 @@ class CourseSchedule(models.Model):
         else:
             print("Invalid time_slot or start_time")
 
+
     def get_event_dates(self):
         days = [int(day) for day in self.days_of_week.split(',')]
-        date_range = [self.start_date + timezone.timedelta(days=x) for x in
-                      range((self.end_date - self.start_date).days + 1)]
+        date_range = [self.start_date + timezone.timedelta(days=x) for x in range((self.end_date - self.start_date).days + 1)]
         return [date for date in date_range if date.weekday() in days]
-
 
 class CourseApplication(models.Model):
     STATUS_CHOICES = [
@@ -145,7 +148,6 @@ class CourseApplication(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.course.title} ({self.get_status_display()})"
-
 
 class Booking(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bookings')
@@ -165,10 +167,8 @@ class Booking(models.Model):
         return f"{self.user.username} - {self.course_schedule.course.title}"
 
     def clean(self):
-        if self.course_schedule and hasattr(self.course_schedule,
-                                            'status') and self.course_schedule.status != 'SCHEDULED':
-            raise ValidationError("Course schedule must be in 'SCHEDULED' status.")
+        if self.course_schedule and self.course_schedule.status != 'SCHEDULED':
+            raise ValidationError(_('Cannot book a cancelled or completed course schedule.'))
+        if self.course_schedule and self.course_schedule.course.is_full():
+            raise ValidationError(_('This course is full.'))
 
-        if self.course_schedule and hasattr(self.course_schedule.room,
-                                            'capacity') and self.course_schedule.room.capacity <= self.course_schedule.bookings.count():
-            raise ValidationError("The course schedule is fully booked.")

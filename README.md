@@ -122,9 +122,18 @@ yet covered the Django Web and Front-end modules in Softuni.
 5. Run migrations: `python manage.py migrate`
 6. Create a superuser: `python manage.py createsuperuser`
 7. Run the development server: `python manage.py runserver`
+8. Try data population : `python manage.py populate_db`
+
 
 ## Usage
 
+- Test users :
+  - normal user (limited access)
+    - username : normal
+    - password : normie123
+  - admin user (full access) 
+    - username : admin
+    - password : Admin123123
 - Access the admin panel at `/admin/`
 - Register as a new user or log in
 - Explore courses, apply for courses, and manage your profile

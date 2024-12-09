@@ -5,9 +5,9 @@ from django.contrib.auth import get_user_model
 from faker import Faker
 from client_management.models import CustomUser, Client
 from course_management.models import Course, CourseSchedule, Room, TimeSlot, CourseApplication, Booking
-from schedule.models import Calendar
 import random
 from datetime import timedelta
+from django.core.exceptions import ValidationError
 
 fake = Faker()
 
@@ -45,17 +45,25 @@ class Command(BaseCommand):
             self.create_bookings(users, courses)
 
             self.print_summary()
+            return None
 
         except Exception as e:
             self.stdout.write(self.style.ERROR(f'An error occurred: {str(e)}'))
             raise
 
-    def create_rooms(self):
-        rooms = [Room.objects.create(name=f"Room {i}", capacity=random.randint(20, 100)) for i in range(1, 6)]
+    @staticmethod
+    def create_rooms():
+        rooms = []
+        for i in range(1, 6):
+            room = Room.objects.create(
+                name=f"Room {i}",
+                capacity=random.randint(20, 100)
+            )
+            rooms.append(room)
         return rooms
 
-    def create_users(self):
-        User = get_user_model()
+    @staticmethod
+    def create_users():
         users = []
         clients = []
         lecturers = []
@@ -92,6 +100,7 @@ class Command(BaseCommand):
 
     def create_courses(self, lecturers, rooms):
         courses = []
+        max_room_capacity = max(room.capacity for room in rooms)
         for i in range(15):
             lecturer = lecturers[i % 10]  # This ensures 5 lecturers teach 2 courses
             room = random.choice(rooms)
@@ -100,9 +109,9 @@ class Command(BaseCommand):
                 description=fake.paragraph(),
                 lecturer=lecturer,
                 room=room,
-                capacity=random.randint(10, room.capacity)
+                capacity=random.randint(10, min(room.capacity, max_room_capacity))
             )
-            # Ensure the calendar is created
+            # Ensure the calendar is created with a unique slug
             if not course.calendar:
                 from schedule.models import Calendar
                 slug = f"course-{course.id}-calendar"
@@ -114,35 +123,49 @@ class Command(BaseCommand):
             courses.append(course)
         return courses
 
-    def create_time_slots(self):
-        time_slots = []
+    @staticmethod
+    def create_time_slots():
+        created_time_slots = []
         days = ['MON', 'TUE', 'WED', 'THU', 'FRI']
         for day in days:
             for hour in range(9, 18, 3):  # 9 AM to 6 PM, 3-hour slots
-                start_time = f'{hour:02d}:00'
-                end_time = f'{(hour + 3):02d}:00'
-                time_slot = TimeSlot.objects.create(day=day, start_time=start_time, end_time=end_time)
-                time_slots.append(time_slot)
-        return time_slots
+                start_time = timezone.datetime.strptime(f'{hour:02d}:00', '%H:%M').time()
+                end_time = timezone.datetime.strptime(f'{(hour + 3):02d}:00', '%H:%M').time()
+                time_slot = TimeSlot.objects.create(
+                    day=day,
+                    start_time=start_time,
+                    end_time=end_time
+                )
+                created_time_slots.append(time_slot)
+        return created_time_slots
 
     def create_course_schedules(self, courses, rooms, time_slots):
         for course in courses:
             start_date = timezone.now().date() + timedelta(days=random.randint(1, 30))
             for _ in range(random.randint(5, 10)):  # 5-10 schedules per course
-                room = random.choice(rooms)
+                # Filter rooms with sufficient capacity
+                suitable_rooms = [room for room in rooms if room.capacity >= course.capacity]
+                if not suitable_rooms:
+                    continue  # Skip this schedule if no suitable room is found
+                room = random.choice(suitable_rooms)
                 time_slot = random.choice(time_slots)
                 schedule_date = start_date + timedelta(days=random.randint(0, 60))
-                CourseSchedule.objects.create(
-                    course=course,
-                    room=room,
-                    time_slot=time_slot,
-                    start_date=schedule_date,
-                    end_date=schedule_date + timedelta(days=random.randint(1, 14)),
-                    days_of_week=",".join(str(x) for x in random.sample(range(7), 3)),
-                    status=random.choice(['SCHEDULED', 'CANCELLED', 'COMPLETED'])
-                )
+                try:
+                    CourseSchedule.objects.create(
+                        course=course,
+                        room=room,
+                        time_slot=time_slot,
+                        start_date=schedule_date,
+                        end_date=schedule_date + timedelta(days=random.randint(1, 14)),
+                        days_of_week=",".join(str(x) for x in random.sample(range(7), 3)),
+                        status=random.choice(['SCHEDULED', 'CANCELLED', 'COMPLETED'])
+                    )
+                except ValidationError as e:
+                    print(f"Validation error when creating schedule for course {course.title}: {e}")
+                    continue
 
-    def create_bookings(self, users, courses):
+    @staticmethod
+    def create_bookings(users, courses):
         for user in users[:20]:  # Only clients make bookings
             available_courses = list(courses)
             for _ in range(4):  # Try to make 4 bookings for each user
