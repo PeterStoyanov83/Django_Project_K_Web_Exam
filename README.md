@@ -1,5 +1,6 @@
 # Project K - IT and Business Education Platform
 
+### current state - Deployment in process (in Render) 
 
 ## Overview
 
@@ -128,7 +129,6 @@ yet covered the Django Web and Front-end modules in Softuni.
 
 ## Usage
 
-# current state - Deployment in process (in Render) 
 
 - Test users :
   - normal user (limited access)
