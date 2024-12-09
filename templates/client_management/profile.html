@@ -83,19 +83,37 @@
                             <p class="font-medium">{{ user.industry|default:"Not provided" }}</p>
                         </div>
                     {% endif %}
-                    {% if user.user_type == 'BUSINESS' and client %}
-                        <div>
-                            <p class="text-gray-600 text-sm">Company Name:</p>
-                            <p class="font-medium">{{ client.company_name }}</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-600 text-sm">Industry:</p>
-                            <p class="font-medium">{{ client.industry }}</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-600 text-sm">Registration Date:</p>
-                            <p class="font-medium">{{ client.registration_date|date:"F d, Y" }}</p>
-                        </div>
+                </div>
+
+                <!-- Uploaded Files Section -->
+                <div class="mt-8">
+                    <h2 class="text-xl font-semibold mb-4">Uploaded Files</h2>
+                    {% if user.files.all %}
+                        <ul class="space-y-3">
+                            {% for file in user.files.all %}
+                                <li class="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                                    <div class="flex items-center space-x-3">
+                                        <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                        </svg>
+                                        <div>
+                                            <a href="{{ file.file.url }}" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium">
+                                                {{ file.file.name|slice:"13:" }}
+                                            </a>
+                                            <p class="text-xs text-gray-500">Uploaded {{ file.uploaded_at|date:"F d, Y H:i" }}</p>
+                                        </div>
+                                    </div>
+                                    <form method="post" action="{% url 'client_management:delete_file' file.id %}" class="inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-gray-500 text-center py-4">No files uploaded yet.</p>
                     {% endif %}
                 </div>
             </div>

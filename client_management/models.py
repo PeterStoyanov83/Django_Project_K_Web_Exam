@@ -64,7 +64,9 @@ class Laptop(models.Model):
     client = models.ForeignKey(
         Client,
         on_delete=models.CASCADE,
-        related_name='laptops'
+        related_name='laptops',
+        null=True,
+        blank=True,
     )
     brand = models.CharField(max_length=100)
     model = models.CharField(max_length=100)

@@ -1,34 +1,25 @@
-import os
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.views import PasswordResetView
 from django.urls import reverse_lazy
-from .forms import CustomUserCreationForm, CustomAuthenticationForm, LaptopForm, ClientForm, CustomUserForm, \
+from .forms import CustomUserCreationForm, CustomAuthenticationForm, LaptopForm, ClientForm, \
     ClientFileForm, UserProfileForm
 from .models import Client, Laptop, ClientFile
 from course_management.models import Course, CourseApplication, CourseSchedule
-
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import ClientFile
 
 
 @login_required
 def profile(request):
-    user = request.user
-    client_files = ClientFile.objects.filter(user=user)
-
-    # Add filename to each file object
-    for file in client_files:
-        file.filename = os.path.basename(file.file.name)
-
+    # Get all files uploaded by the user
+    user_files = ClientFile.objects.filter(user=request.user).order_by('-uploaded_at')
     context = {
-        'user': user,
-        'client_files': client_files,
-        'file_form': ClientFileForm(),
+        'user': request.user,
+        'client': request.user.client_profile if hasattr(request.user, 'client_profile') else None,
+        'user_files': user_files,
     }
     return render(request, 'client_management/profile.html', context)
 
@@ -52,8 +43,11 @@ def profile_edit(request):
                     uploaded_by=request.user
                 )
                 new_file.save()
+                messages.success(request, 'File uploaded successfully.')
             messages.success(request, 'Profile updated successfully.')
             return redirect('client_management:profile')
+        else:
+            messages.error(request, 'Please correct the errors below.')
     else:
         user_form = UserProfileForm(instance=request.user)
         client_form = ClientForm(instance=request.user.client_profile) if hasattr(request.user,
@@ -66,6 +60,17 @@ def profile_edit(request):
         'file_form': file_form,
     }
     return render(request, 'client_management/profile_edit.html', context)
+
+
+@login_required
+def delete_file(request, file_id):
+    try:
+        file = ClientFile.objects.get(id=file_id, user=request.user)
+        file.delete()
+        messages.success(request, 'File deleted successfully.')
+    except ClientFile.DoesNotExist:
+        messages.error(request, 'File not found.')
+    return redirect('client_management:profile')
 
 
 @login_required

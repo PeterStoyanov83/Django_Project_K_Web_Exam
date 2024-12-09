@@ -68,9 +68,15 @@ class LaptopForm(forms.ModelForm):
         }
 
 
-class ClientFileForm(forms.Form):
-    file = forms.FileField(
-        label='Upload File',
-        required=False,
-        widget=forms.ClearableFileInput(attrs={'multiple': False})
-    )
+class ClientFileForm(forms.ModelForm):
+    class Meta:
+        model = ClientFile
+        fields = ['file']
+        widgets = {
+            'file': forms.ClearableFileInput(attrs={'multiple': False}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['file'].label = 'Upload File'
+        self.fields['file'].required = False
