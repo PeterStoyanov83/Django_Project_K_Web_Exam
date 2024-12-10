@@ -1,5 +1,5 @@
 annotated-types==0.7.0
-anyio==4.6.2.post1
+anyio==3.7.1
 asgiref==3.8.1
 certifi==2024.8.30
 charset-normalizer==3.4.0
@@ -13,8 +13,8 @@ django-scheduler==0.10.1
 Faker==18.9.0
 gunicorn==23.0.0
 h11==0.12.0
-httpcore==0.13.7
-httpx==1.0.0b0
+httpcore==0.15.0
+httpx==0.23.0
 icalendar==6.1.0
 idna==3.10
 jiter==0.8.0

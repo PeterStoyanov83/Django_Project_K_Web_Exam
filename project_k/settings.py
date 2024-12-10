@@ -2,6 +2,7 @@ import os
 import ssl
 from pathlib import Path
 import certifi
+import dj_database_url
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -67,14 +68,16 @@ WSGI_APPLICATION = 'project_k.wsgi.application'
 
 # Database
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'project_k_db',
-        'USER': 'project_k_user',
-        'PASSWORD': 'project_k_password',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(default=os.getenv('DATABASE_URL')),
+
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'project_k_db',
+    #     'USER': 'project_k_user',
+    #     'PASSWORD': 'project_k_password',
+    #     'HOST': 'db',
+    #     'PORT': '5432',
+    # }
 }
 
 # Password validation
@@ -141,3 +144,29 @@ STATICFILES_DIRS = [
 ssl_context = ssl.create_default_context(cafile=certifi.where())
 EMAIL_SSL_CONTEXT = ssl_context
 LOGIN_URL = '/client/login/'
+
+X_FRAME_OPTIONS = 'DENY'
+
+SECURE_HSTS_SECONDS = 31536000  # Enforce HTTPS for one year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Logging Configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs/django_errors.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
