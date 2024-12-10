@@ -4,120 +4,115 @@
 {% block title %}Edit Profile - Project K{% endblock %}
 
 {% block content %}
-    <div class="container mx-auto px-4 py-8">
-        <div class="max-w-4xl mx-auto">
-            <div class="bg-white shadow-lg rounded-xl overflow-hidden">
-                <div class="bg-blue-600 text-white p-6">
-                    <h1 class="text-2xl font-bold">Edit Profile</h1>
-                </div>
-
-                <form method="post" enctype="multipart/form-data" class="p-6 space-y-6">
-                    {% csrf_token %}
-
-                    <!-- Profile Picture Section -->
-                    <div class="form-section">
-                        <h2 class="form-section-title">Profile Picture</h2>
-                        <div class="flex items-center space-x-4">
-                            {% if user.profile_picture %}
-                                <img src="{{ user.profile_picture.url }}" alt="Current Profile Picture"
-                                     class="w-24 h-24 rounded-full object-cover">
-                            {% else %}
-                                <div class="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center">
-                                    <span class="text-3xl text-blue-600">{{ user.username|make_list|first|upper }}</span>
-                                </div>
-                            {% endif %}
-                            <div>
-                                {{ user_form.profile_picture }}
-                                <p class="text-sm text-gray-600 mt-1">Recommended size: 200x200 pixels</p>
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+            <div class="bg-blue-600 text-white p-6">
+                <h1 class="text-2xl font-bold">Edit Profile</h1>
+            </div>
+            
+            <form method="post" enctype="multipart/form-data" class="p-6 space-y-6">
+                {% csrf_token %}
+                
+                <!-- Profile Picture Section -->
+                <div class="form-section">
+                    <h2 class="form-section-title">Profile Picture</h2>
+                    <div class="flex items-center space-x-4">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Current Profile Picture" 
+                                 class="w-24 h-24 rounded-full object-cover">
+                        {% else %}
+                            <div class="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center">
+                                <span class="text-3xl text-blue-600">{{ user.username|make_list|first|upper }}</span>
                             </div>
+                        {% endif %}
+                        <div>
+                            {{ user_form.profile_picture }}
+                            <p class="text-sm text-gray-600 mt-1">Recommended size: 200x200 pixels</p>
                         </div>
                     </div>
+                </div>
 
-                    <!-- User Information Section -->
+                <!-- User Information Section -->
+                <div class="form-section">
+                    <h2 class="form-section-title">User Information</h2>
+                    <div class="form-grid grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {% for field in user_form %}
+                            {% if field.name != 'profile_picture' %}
+                                <div>
+                                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                        {{ field.label }}
+                                    </label>
+                                    {{ field }}
+                                    {% if field.errors %}
+                                        {% for error in field.errors %}
+                                            <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Business Information Section -->
+                {% if user.user_type == 'BUSINESS' %}
                     <div class="form-section">
-                        <h2 class="form-section-title">User Information</h2>
+                        <h2 class="form-section-title">Business Information</h2>
                         <div class="form-grid grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {% for field in user_form %}
-                                {% if field.name != 'profile_picture' %}
-                                    <div>
-                                        <label for="{{ field.id_for_label }}"
-                                               class="block text-sm font-medium text-gray-700 mb-1">
-                                            {{ field.label }}
-                                        </label>
-                                        {{ field }}
-                                        {% if field.errors %}
-                                            {% for error in field.errors %}
-                                                <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
-                                            {% endfor %}
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
+                            {% for field in client_form %}
+                                <div>
+                                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                        {{ field.label }}
+                                    </label>
+                                    {{ field }}
+                                    {% if field.errors %}
+                                        {% for error in field.errors %}
+                                            <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
                             {% endfor %}
                         </div>
                     </div>
+                {% endif %}
 
-                    <!-- Business Information Section -->
-                    {% if user.user_type == 'BUSINESS' %}
-                        <div class="form-section">
-                            <h2 class="form-section-title">Business Information</h2>
-                            <div class="form-grid grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {% for field in client_form %}
-                                    <div>
-                                        <label for="{{ field.id_for_label }}"
-                                               class="block text-sm font-medium text-gray-700 mb-1">
-                                            {{ field.label }}
-                                        </label>
-                                        {{ field }}
-                                        {% if field.errors %}
-                                            {% for error in field.errors %}
-                                                <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
-                                            {% endfor %}
-                                        {% endif %}
-                                    </div>
-                                {% endfor %}
+                <!-- File Upload Section -->
+                <div class="form-section">
+                    <h2 class="form-section-title">Upload Documents</h2>
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                        <div class="space-y-1 text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="flex text-sm text-gray-600">
+                                <label for="{{ file_form.file.id_for_label }}" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                                    <span>Upload a file</span>
+                                    <input type="file" name="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="hidden" id="{{ file_form.file.id_for_label }}">
+                                </label>
+                                <p class="pl-1">or drag and drop</p>
                             </div>
-                        </div>
-                    {% endif %}
-
-                    <!-- File Upload Section -->
-                    <div class="form-section">
-                        <h2 class="form-section-title">Upload Documents</h2>
-                        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                            <div class="space-y-1 text-center">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none"
-                                     viewBox="0 0 48 48" aria-hidden="true">
-                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                                          stroke-width="2" stroke-linecap="round" stroke -linejoin="round"></path>
-                                </svg>
-                                <div class="flex text-sm text-gray-600">
-                                    <label for="{{ file_form.file.id_for_label }}"
-                                           class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-                                        <span>Upload a file</span>
-                                        {{ file_form.file }}
-                                    </label>
-                                    <p class="pl-1">or drag and drop</p>
-                                </div>
-                                <p class="text-xs text-gray-500">
-                                    PDF, DOC, DOCX, JPG, PNG up to 10MB
-                                </p>
-                            </div>
+                            <p class="text-xs text-gray-500">
+                                Accepted formats: PDF, DOC, DOCX, JPG, JPEG, PNG (max 10MB)
+                            </p>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Form Actions -->
-                    <div class="flex justify-end space-x-4 pt-6 border-t">
-                        <a href="{% url 'client_management:profile' %}"
-                           class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors">
-                            Cancel
-                        </a>
-                        <button type="submit"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                            Save Changes
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <!-- Form Actions -->
+                <div class="flex justify-end space-x-4 pt-6 border-t">
+                    <a href="{% url 'client_management:profile' %}" 
+                       class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors">
+                        Cancel
+                    </a>
+                    <button type="submit" 
+                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 {% endblock %}
 
