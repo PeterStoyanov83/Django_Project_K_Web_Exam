@@ -12,12 +12,12 @@ class ClientManagementConfig(AppConfig):
     @staticmethod
     def create_default_site_profile(sender, **kwargs):
         """after migrations"""
-        from client_management.models import Client
+        from client_management.models import CustomUser
 
 
 
-        if not Client.objects.filter(username='admin').exists():
-            Client.objects.create_superuser(username='admin', email='admin@admin.ad', password='admin123')
+        if not CustomUser.objects.filter(username='admin').exists():
+            CustomUser.objects.create_superuser(username='admin', email='admin@admin.ad', password='admin123')
 
 
     def ready(self):
