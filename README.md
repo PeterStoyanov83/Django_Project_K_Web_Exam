@@ -4,6 +4,8 @@
 
 ### current state - Deployment in process (in Render) 
 
+[Test Report](https://github.com/PeterStoyanov83/Django_Project_K_Web_Exam/blob/main/URLs.md)
+
 ## Overview
 
 Project K is a comprehensive IT and business education platform designed to connect students with expert instructors,
