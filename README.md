@@ -4,7 +4,7 @@
 
 ### current state - Deployment in process (in Render) 
 
-[Test Report - coverage 85%](https://github.com/PeterStoyanov83/Django_Project_K_Web_Exam/blob/main/URLs.md)
+[Test Report - coverage 85%](https://github.com/PeterStoyanov83/Django_Project_K_Web_Exam/blob/main/TestReport.md)
 
 
 [URL map](https://github.com/PeterStoyanov83/Django_Project_K_Web_Exam/blob/main/URLs.md)
