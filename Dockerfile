@@ -15,4 +15,4 @@ RUN python manage.py collectstatic --noinput
 
 
 # Start the Gunicorn server
-CMD ["sh", "-c", "python manage.py migrate && sleep 5 && gunicorn --timeout 600 --bind 0.0.0.0:8000 project_k.wsgi:application"]
+CMD ["sh", "-c", "python manage.py makemigrations && sleep 5 && python manage.py migrate && sleep 5 && gunicorn --timeout 600 --bind 0.0.0.0:8000 project_k.wsgi:application"]
