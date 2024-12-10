@@ -2,7 +2,6 @@
 
 # Deployed at - [https://project-k-web.onrender.com/](https://project-k-web.onrender.com/)
 
-### current state - Deployment in process (in Render) 
 
 [Test Report - coverage 85%](https://github.com/PeterStoyanov83/Django_Project_K_Web_Exam/blob/main/TestReport.md)
 
