@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
-from django.core.mail import BadHeaderError, send_mail
+
+from django.core.mail import send_mail, BadHeaderError
 from django.core.validators import validate_email
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -8,8 +9,9 @@ from django.template.loader import render_to_string
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
-
+from .tasks import send_contact_email
 import logging
+from celery.exceptions import OperationalError
 
 from django.utils.html import strip_tags
 
@@ -56,36 +58,42 @@ def contact(request):
             return redirect('pages:contact')
 
         try:
-
             validate_email(email)
         except ValidationError:
             messages.error(request, "Please enter a valid email address.")
             return redirect('pages:contact')
 
         try:
-            # mail sender function universal
+            # Render email content
             email_content = render_to_string('mail/contact_email.html', {
                 'name': name,
                 'email': email,
-                'message': message
+                'message': message,
             })
 
-            send_mail(
-                subject='contact form',
-                message=strip_tags(email_content),
-                html_message=email_content,
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[email],
-            )
-            messages.success(request, "Your message has been sent successfully. We'll get back to you soon!")
-            logger.info(f"Email sent successfully from {email}")
-        except BadHeaderError:
-            messages.error(request, "Invalid header found. Please try again.")
-            logger.error(f"BadHeaderError when sending email from {email}")
+            contact_email = getattr(settings, 'CONTACT_EMAIL', None)
+            if contact_email:
+                try:
+                    send_contact_email.delay(
+                        subject=f"New contact form submission from {name}",
+                        message=email_content,
+                        recipient_list=[contact_email]
+                    )
+                    messages.success(request, "Your message has been sent successfully. We'll get back to you soon!")
+                    logger.info(f"Email task queued successfully for {email}")
+                except OperationalError as e:
+                    messages.error(request, "We're experiencing technical difficulties. Please try again later.")
+                    logger.error(f"Celery OperationalError for {email}. Error: {str(e)}")
+                except Exception as e:
+                    messages.error(request, "An error occurred while sending your message. Please try again later.")
+                    logger.error(f"Failed to queue email task for {email}. Error: {str(e)}")
+            else:
+                messages.error(request, "Unable to send email at this time. Please try again later.")
+                logger.error("CONTACT_EMAIL setting is not configured")
+
         except Exception as e:
-            messages.error(request, "An error occurred while sending your message. Please try again later.")
-            logger.error(f"Failed to send email from {email}. Error: {e}")
-            raise  # Temporarily raise the exception for debugging
+            messages.error(request, "An error occurred while processing your message. Please try again later.")
+            logger.error(f"Unexpected error in contact form for {email}. Error: {str(e)}")
 
         return redirect('pages:contact')
 
@@ -93,6 +101,7 @@ def contact(request):
         'page_title': 'Contact Us'
     }
     return render(request, 'pages/contact.html', context)
+
 
 
 @login_required
@@ -105,3 +114,4 @@ def restricted_view(request):
 
 def healthz(request):
     return JsonResponse({"status": "ok"}, status=200)
+
