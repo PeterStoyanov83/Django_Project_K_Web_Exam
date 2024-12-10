@@ -28,6 +28,33 @@ yet covered the Django Web and Front-end modules in Softuni.
 
 ## What you see here is the result of the work after completing the Python Web and Front End Modules. in SoftUni!  
 
+##  Take A Look Around: 
+
+### log-in with one of these users: 
+
+- Test users :
+  - normal user (limited access) Sees most of the app except the Admin Panel 
+    - username : normaluser
+    - password : normie123
+
+  - Moderator:  (limited access) Can access the app and modify lecturers, courses and users 
+    - username : peter
+    - password : peterko123    
+
+  - admin user (full access)  Has full admin rights and can access django admin panel 
+    - username : admin
+    - password : Admin123123
+   
+      
+- Access the admin panel at `https://project-k-web.onrender.com/admin/`
+  (you won't be able to access it if you are not logged in as admin)
+
+- Register as a new user or log in
+ 
+- Explore courses, apply for courses, and manage your profile
+- Admins can manage users, courses, and applications through the admin interface
+
+
 ## Features
 
 ### User Management
@@ -120,11 +147,10 @@ yet covered the Django Web and Front-end modules in Softuni.
 - Tailwind CSS for styling
 - Django Scheduler for course scheduling
 - Pillow for image processing
-- Celery for asynchronous tasks (e.g., sending emails)
 - Docker for containerization of the database
 - OpenAI API for chatbot functionality (talk to Daisy)
 
-## Setup and Installation
+## Local Setup and Installation
 
 1. Clone the repository
 2. Set up a virtual environment
@@ -136,20 +162,7 @@ yet covered the Django Web and Front-end modules in Softuni.
 8. Try data population : `python manage.py populate_db`
 
 
-## Usage
 
-
-- Test users :
-  - normal user (limited access)
-    - username : normal
-    - password : normie123
-  - admin user (full access) 
-    - username : admin
-    - password : Admin123123
-- Access the admin panel at `/admin/`
-- Register as a new user or log in
-- Explore courses, apply for courses, and manage your profile
-- Admins can manage users, courses, and applications through the admin interface
 
 
 
