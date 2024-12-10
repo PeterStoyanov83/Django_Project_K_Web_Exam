@@ -3,6 +3,7 @@ import ssl
 from pathlib import Path
 import certifi
 import dj_database_url
+from distro import os_release_attr
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -70,16 +71,16 @@ WSGI_APPLICATION = 'project_k.wsgi.application'
 
 # Database
 DATABASES = {
-    'default': dj_database_url.config(default=os.getenv('DATABASE_URL')),
+    # 'default': dj_database_url.config(default=os.getenv('DATABASE_URL')),
 
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': 'project_k_db',
-    #     'USER': 'project_k_user',
-    #     'PASSWORD': 'project_k_password',
-    #     'HOST': 'db',
-    #     'PORT': '5432',
-    # }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
+    }
 }
 
 # Password validation

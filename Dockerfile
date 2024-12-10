@@ -12,6 +12,9 @@ COPY . .
 
 # Collect static files (if needed)
 RUN python manage.py collectstatic --noinput
+RUN python manage.py makemigrations
+RUN python manage.py migrate
+
 
 # Start the Gunicorn server
 CMD ["gunicorn", "project_k.wsgi:application", "--workers=4", "--bind=0.0.0.0:8000"]
