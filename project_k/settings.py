@@ -16,7 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(int(os.getenv('DJANGO_DEBUG')))
+DEBUG = bool(int(os.getenv('DJANGO_DEBUG','0')))
 
 ALLOWED_HOSTS = ['project-k-web.onrender.com','localhost']
 
