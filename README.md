@@ -25,7 +25,6 @@ found in ready tools therefore Peter offered to start planning and development o
 knowledge in Python and Django. Back then Peter wasn't able to complete the full extent of the project since he hadn't 
 yet covered the Django Web and Front-end modules in Softuni. 
 
-## What you see here is the result of the work after completing the Python Web and Front End Modules. in SoftUni!  
 
 ##  Take A Look Around: 
 
