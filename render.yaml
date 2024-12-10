@@ -1,14 +1,13 @@
 services:
   - type: web
     name: django-project
-    runtime: python
+    runtime: python-3.11.9
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn project_k.wsgi:application --workers 4 --bind 0.0.0.0:8000
+    startCommand: gunicorn project_k.wsgi:application --workers=4 --bind=0.0.0.0:8000
     envVars:
       - key: DJANGO_SECRET_KEY
         value: your-secret-key
       - key: DJANGO_DEBUG
         value: "0"
       - key: DATABASE_URL
-        value: postgres://project_k_user:project_k_password@your-db-host:5432/project_k_db
-
+        value: postgres://<username>:<password>@<host>:<port>/<database_name>
