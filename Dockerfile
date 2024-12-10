@@ -1,19 +1,17 @@
 FROM python:3.11-slim
 
-RUN apt-get update && apt-get install -y build-essential libpq-dev && rm -rf /var/lib/apt/lists/*
-
+# Set the working directory
 WORKDIR /app
 
-COPY requirements.txt /app/
-RUN pip install -r requirements.txt
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /app/
+# Copy the entire project into the container
+COPY . .
 
-# Set environment variables for Django
-ENV PYTHONUNBUFFERED=1
-ENV DJANGO_SETTINGS_MODULE=project_k.settings
-
-# Collect static files at build time (optional)
+# Collect static files (if needed)
 RUN python manage.py collectstatic --noinput
 
-# The command will be overridden by docker-compose.yml
+# Start the Gunicorn server
+CMD ["gunicorn", "project_k.wsgi:application", "--workers=4", "--bind=0.0.0.0:8000"]
