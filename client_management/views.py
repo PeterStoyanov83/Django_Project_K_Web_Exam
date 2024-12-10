@@ -1,6 +1,5 @@
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.views import PasswordResetView
-from django.urls import reverse_lazy
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, LaptopForm, ClientForm, \
     ClientFileForm, UserProfileForm
 from .models import Client, Laptop, ClientFile
@@ -9,7 +8,12 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
+from django.contrib.auth import login
 from django.contrib import messages
+from .models import Client
 
 
 @login_required
@@ -92,18 +96,17 @@ def laptop_list(request):
     return render(request, 'client_management/laptop_list.html', {'laptops': laptops})
 
 
-def register(request):
-    if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            Client.objects.create(user=user)
-            login(request, user)
-            messages.success(request, 'Registration successful.')
-            return redirect('client_management:profile')
-    else:
-        form = CustomUserCreationForm()
-    return render(request, 'client_management/register.html', {'form': form})
+class RegisterView(CreateView):
+    form_class = CustomUserCreationForm
+    template_name = 'client_management/register.html'
+    success_url = reverse_lazy('client_management:login')
+
+    def form_valid(self, form):
+        user = form.save()
+        Client.objects.create(user=user)
+        login(self.request, user)
+        messages.success(self.request, 'Registration successful.')
+        return super().form_valid(form)
 
 
 def user_login(request):
@@ -205,23 +208,6 @@ def apply_for_course(request):
     courses = Course.objects.all()
     return render(request, '../client_management/templates/client_management/apply_for_course.html',
                   {'courses': courses})
-
-
-class AuthRequiredMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
-        response = self.get_response(request)
-
-        if response.status_code == 302 and not request.user.is_authenticated:
-            # Check if the redirect is to a page that requires authentication
-            redirect_url = response.url
-            if any(url in redirect_url for url in ['/profile/', '/course/', '/admin/']):
-                messages.error(request, "Not allowed! Please log in first.")
-                return redirect(reverse('pages:home'))
-
-        return response
 
 
 @login_required

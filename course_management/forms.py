@@ -2,12 +2,25 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from .models import Course, CourseSchedule, Booking
 from client_management.models import CustomUser
+from django.core.exceptions import ValidationError
 
 
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
         fields = ['title', 'description', 'lecturer', 'room', 'capacity']
+
+    def clean_title(self):
+        title = self.cleaned_data.get('title')
+        if not title or title.strip() == '':
+            raise ValidationError('Title cannot be empty or consist only of spaces.')
+        return title
+
+    def clean_description(self):
+        description = self.cleaned_data.get('description')
+        if not description or description.strip() == '':
+            raise ValidationError('Description cannot be empty or consist only of spaces.')
+        return description
 
 
 class CourseScheduleForm(forms.ModelForm):

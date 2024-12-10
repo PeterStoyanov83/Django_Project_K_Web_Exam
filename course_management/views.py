@@ -5,11 +5,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Course, CourseSchedule, Room, CourseApplication, TimeSlot, Booking
 from .forms import CourseForm, CourseScheduleForm, BookingForm, UserForm
 from django.contrib.admin.views.decorators import staff_member_required
-from django.core.exceptions import ValidationError
 from django.forms import inlineformset_factory
-from django.db import transaction
-from django.http import JsonResponse
-from django.urls import reverse
 
 
 def course_list(request):
@@ -65,17 +61,27 @@ def course_create(request):
                 schedule.save()
             messages.success(request, 'Course created successfully.')
             return redirect('course_management:course_detail', pk=course.pk)
+        else:
+            if not form.is_valid():
+                messages.error(request, 'There are errors in the course form.')
+            if not schedule_formset.is_valid():
+                messages.error(request, 'There are errors in the schedule formset.')
     else:
         form = CourseForm()
         schedule_formset = CourseScheduleFormSet()
-    return render(request, 'course_management/course_form.html', {'form': form, 'schedule_formset': schedule_formset})
+
+    return render(request, 'course_management/course_form.html', {
+        'form': form,
+        'schedule_formset': schedule_formset
+    })
 
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
 def course_update(request, pk):
     course = get_object_or_404(Course, pk=pk)
-    CourseScheduleFormSet = inlineformset_factory(Course, CourseSchedule, form=CourseScheduleForm, extra=1, can_delete=True)
+    CourseScheduleFormSet = inlineformset_factory(Course, CourseSchedule, form=CourseScheduleForm, extra=1,
+                                                  can_delete=True)
     if request.method == 'POST':
         form = CourseForm(request.POST, instance=course)
         schedule_formset = CourseScheduleFormSet(request.POST, instance=course)
@@ -87,7 +93,8 @@ def course_update(request, pk):
     else:
         form = CourseForm(instance=course)
         schedule_formset = CourseScheduleFormSet(instance=course)
-    return render(request, 'course_management/course_form.html', {'form': form, 'schedule_formset': schedule_formset, 'course': course})
+    return render(request, 'course_management/course_form.html',
+                  {'form': form, 'schedule_formset': schedule_formset, 'course': course})
 
 
 @staff_member_required
@@ -124,7 +131,6 @@ def apply_for_course(request, course_id):
         messages.success(request, "Your application has been submitted successfully.")
 
     return redirect('course_management:course_detail', pk=course_id)
-
 
 
 @login_required
@@ -348,4 +354,3 @@ def user_edit(request, pk):
         'user': user,
     }
     return render(request, 'course_management/user_form.html', context)
-

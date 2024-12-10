@@ -9,9 +9,9 @@ from datetime import datetime, time
 class Course(models.Model):
     title = models.CharField(_("Title"), max_length=200)
     description = models.TextField(_("Description"))
-    lecturer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='courses_taught', verbose_name=_("Lecturer"))
+    lecturer = models.ForeignKey(to=CustomUser, on_delete=models.CASCADE, related_name='courses_taught', verbose_name=_("Lecturer"))
     room = models.ForeignKey('Room', on_delete=models.SET_NULL, null=True, blank=True, related_name='courses')
-    calendar = models.OneToOneField('schedule.Calendar', on_delete=models.SET_NULL, null=True, blank=True)
+    calendar = models.OneToOneField(to=Calendar, on_delete=models.SET_NULL, null=True, blank=True)
     capacity = models.PositiveIntegerField(_("Capacity"), default=20)
 
     class Meta:
