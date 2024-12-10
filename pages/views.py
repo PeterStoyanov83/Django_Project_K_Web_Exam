@@ -7,6 +7,8 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
+from django.http import JsonResponse
+
 import logging
 
 from django.utils.html import strip_tags
@@ -99,3 +101,7 @@ def restricted_view(request):
         'page_title': 'Restricted Area'
     }
     return render(request, '403.html', context)
+
+
+def healthz(request):
+    return JsonResponse({"status": "ok"}, status=200)
