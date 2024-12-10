@@ -1,4 +1,7 @@
 from django.contrib import admin
+from schedule.admin import CalendarAdmin
+from schedule.models import Calendar
+
 from .models import Room, TimeSlot, Course, CourseSchedule, Booking
 
 @admin.register(Room)
@@ -26,3 +29,6 @@ class BookingAdmin(admin.ModelAdmin):
     list_filter = ('course_schedule__start_date', 'booking_date')
     search_fields = ('user__username', 'course_schedule__course__title')
 
+@admin.register(Calendar)
+class CalendarAdmin(admin.ModelAdmin):
+    pass
