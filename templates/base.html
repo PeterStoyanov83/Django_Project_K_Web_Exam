@@ -16,7 +16,7 @@
             <ul class="flex space-x-6">
                 <li><a href="{% url 'pages:home' %}" class="hover:underline">Home</a></li>
                 <li><a href="{% url 'course_management:course_list' %}" class="hover:underline">Courses</a></li>
-                <li><a href="{% url 'course_management:contact' %}" class="hover:underline">Contact</a></li>
+                <li><a href="{% url 'pages:contact' %}" class="hover:underline">Contact</a></li>
 
                 {% if user.is_authenticated and user.is_staff %}
                     <li><a href="{% url 'course_management:admin_panel' %}" class="hover:underline">Admin Panel</a></li>
