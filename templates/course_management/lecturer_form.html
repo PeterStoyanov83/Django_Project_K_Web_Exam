@@ -6,38 +6,37 @@
 {% block content %}
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-2xl font-bold mb-6">{% if lecturer %}Edit{% else %}Create{% endif %} Lecturer</h1>
-
         <form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
             {% csrf_token %}
-            <!-- Add form fields here -->
+            {% if form.errors %}
+                <div class="text-red-600 mb-4">
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
                     Name
                 </label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                       id="name"
-                       type="text"
-                       name="name"
-                       placeholder="Lecturer Name"
-                       value="{{ form.name.value|default_if_none:'' }}">
+                {{ form.first_name }}
+                {{ form.last_name }}
             </div>
 
-            <!-- New field for assigning courses -->
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="courses">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="bio">
+                    Bio
+                </label>
+                {{ form.bio }}
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="courses_taught">
                     Assign Courses
                 </label>
-                <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="courses"
-                        name="courses"
-                        multiple>
-                    {% for course in courses %}
-                        <option value="{{ course.id }}"
-                                {% if course in form.courses.value %}selected{% endif %}>{{ course.title }}</option>
-                    {% endfor %}
-                </select>
-                <p class="text-gray-500 text-xs italic mt-1">Hold Ctrl (Windows) or Command (Mac) to select multiple
-                    courses.</p>
+                {{ form.courses_taught }}
+                <p class="text-gray-500 text-xs italic mt-1">
+                    Hold Ctrl (Windows) or Command (Mac) to select multiple courses.
+                </p>
             </div>
 
             <div class="flex items-center justify-between">

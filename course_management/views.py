@@ -2,19 +2,19 @@ from client_management.models import CustomUser
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import Course, CourseSchedule, Room, CourseApplication, TimeSlot, Booking
-from .forms import CourseForm, CourseScheduleForm, BookingForm, UserForm
+from .models import Course, CourseSchedule, Room, CourseApplication, TimeSlot, Booking, Lecturer
+from .forms import CourseForm, CourseScheduleForm, BookingForm, UserForm, LecturerForm
 from django.contrib.admin.views.decorators import staff_member_required
 from django.forms import inlineformset_factory
 from django.http import HttpResponseForbidden
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def course_list(request):
-    courses = Course.objects.all()
-    context = {
-        'courses': courses,
-    }
-    return render(request, 'course_management/course_list.html', context)
+    courses = Course.objects.prefetch_related('lecturers').all()  # Optimize for related lecturers
+    return render(request, 'course_management/course_list.html', {'courses': courses})
 
 
 def schedule(request):
@@ -54,6 +54,7 @@ def course_create(request):
     if request.method == 'POST':
         form = CourseForm(request.POST)
         schedule_formset = CourseScheduleFormSet(request.POST)
+
         if form.is_valid() and schedule_formset.is_valid():
             course = form.save()
             schedules = schedule_formset.save(commit=False)
@@ -61,11 +62,13 @@ def course_create(request):
                 schedule.course = course
                 schedule.save()
             messages.success(request, 'Course created successfully.')
-            return redirect('course_management:course_detail', pk=course.pk)
+            return redirect('course_management:admin_courses', pk=course.pk)
         else:
             if not form.is_valid():
+                logger.error("Course form errors: %s", form.errors)
                 messages.error(request, 'There are errors in the course form.')
             if not schedule_formset.is_valid():
+                logger.error("Schedule formset errors: %s", schedule_formset.errors)
                 messages.error(request, 'There are errors in the schedule formset.')
     else:
         form = CourseForm()
@@ -233,7 +236,7 @@ def admin_course_applications(request):
     applications = CourseApplication.objects.filter(status='pending').order_by('-application_date')
     return render(
         request,
-        'course_management/admin_course_applications.html',  {'applications': applications}
+        'course_management/admin_course_applications.html', {'applications': applications}
     )
 
 
@@ -280,13 +283,9 @@ def admin_only_view(request):
     return render(request, '../templates/403.html')
 
 
-@user_passes_test(lambda u: u.is_staff)
 def admin_courses(request):
-    courses = Course.objects.all()
-    context = {
-        'courses': courses,
-    }
-    return render(request, 'course_management/admin_courses.html', context)
+    courses = Course.objects.prefetch_related('lecturers').all()
+    return render(request, 'course_management/admin_courses.html', {'courses': courses})
 
 
 @user_passes_test(lambda u: u.is_staff)
@@ -306,16 +305,25 @@ def lecturer_create(request):
     return render(request, 'course_management/lecturer_form.html')
 
 
+@login_required
 @user_passes_test(lambda u: u.is_staff)
-def lecturer_edit(request, pk):
-    lecturer = CustomUser.objects.get(pk=pk)
+def lecturer_edit(request, pk=None):
+    lecturer = get_object_or_404(Lecturer, pk=pk) if pk else None
     if request.method == 'POST':
-        messages.success(request, 'Lecturer updated successfully.')
-        return redirect('course_management:admin_lecturers')
-    context = {
+        form = LecturerForm(request.POST, instance=lecturer)
+        if form.is_valid():
+            form.save()
+            return redirect('course_management:admin_lecturers')
+    else:
+        form = LecturerForm(instance=lecturer)
+
+    courses = Course.objects.all()  # Ensure courses are fetched
+
+    return render(request, 'course_management/lecturer_form.html', {
+        'form': form,
         'lecturer': lecturer,
-    }
-    return render(request, 'course_management/lecturer_form.html', context)
+        'courses': courses,
+    })
 
 
 @login_required
@@ -323,6 +331,7 @@ def lecturer_edit(request, pk):
 def admin_users(request):
     users = CustomUser.objects.all()
     return render(request, 'course_management/admin_users.html', {'users': users})
+
 
 @user_passes_test(lambda u: u.is_staff)
 def user_create(request):
@@ -365,6 +374,7 @@ def user_edit(request, pk):
     }
     return render(request, 'course_management/user_form.html', context)
 
+
 @user_passes_test(lambda u: u.is_staff)
 def delete_user(request, pk):
     user = get_object_or_404(CustomUser, pk=pk)
@@ -379,3 +389,7 @@ def delete_user(request, pk):
     messages.success(request, f'User {user.username} deleted successfully.')
     return redirect('course_management:admin_users')
 
+
+def lecturer_list(request):
+    lecturers = Lecturer.objects.all()
+    return render(request, 'course_management/lecturer_list.html', {'lecturers': lecturers})

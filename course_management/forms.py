@@ -1,6 +1,6 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from .models import Course, CourseSchedule, Booking
+from .models import Course, CourseSchedule, Booking, Lecturer
 from client_management.models import CustomUser
 from django.core.exceptions import ValidationError
 
@@ -47,7 +47,6 @@ class CourseScheduleForm(forms.ModelForm):
     class Meta:
         model = CourseSchedule
         fields = [
-            'course',
             'room',
             'time_slot',
             'start_date',
@@ -118,3 +117,16 @@ class UserForm(forms.ModelForm):
             raise forms.ValidationError("Passwords do not match")
 
         return cleaned_data
+
+
+class LecturerForm(forms.ModelForm):
+    courses_taught = forms.ModelMultipleChoiceField(
+        queryset=Course.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label="Assign Courses"
+    )
+
+    class Meta:
+        model = Lecturer
+        fields = ['first_name', 'last_name', 'bio', 'courses_taught']
