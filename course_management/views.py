@@ -43,11 +43,13 @@ def schedule(request):
     }
     return render(request, 'course_management/schedule.html', context)
 
+
 @login_required
 def my_schedule(request):
     # Filter bookings or applications for the logged-in user
     user_courses = CourseApplication.objects.filter(user=request.user, status='approved').select_related('course')
-    user_schedules = CourseSchedule.objects.filter(course__in=[app.course for app in user_courses]).select_related('room', 'time_slot')
+    user_schedules = CourseSchedule.objects.filter(course__in=[app.course for app in user_courses]).select_related(
+        'room', 'time_slot')
 
     # Organize schedules by time slots and rooms
     rooms = Room.objects.all()
@@ -72,7 +74,6 @@ def my_schedule(request):
         'rooms': rooms,
     }
     return render(request, 'course_management/my_schedule.html', context)
-
 
 
 @login_required
@@ -168,7 +169,6 @@ def apply_for_course(request, course_id):
         messages.success(request, "Your application has been submitted successfully.")
 
     return redirect('course_management:course_detail', pk=course_id)
-
 
 
 @login_required
@@ -316,6 +316,7 @@ def admin_courses(request):
     courses = Course.objects.prefetch_related('lecturers').all()
     return render(request, 'course_management/admin_courses.html', {'courses': courses})
 
+
 @login_required
 @user_passes_test(lambda u: u.is_staff)
 def admin_lecturers(request):
@@ -422,6 +423,7 @@ def lecturer_list(request):
     lecturers = Lecturer.objects.all()
     return render(request, 'course_management/lecturer_list.html', {'lecturers': lecturers})
 
+
 @login_required
 @user_passes_test(lambda u: u.is_staff)
 def lecturer_create(request):
@@ -434,6 +436,7 @@ def lecturer_create(request):
     else:
         form = LecturerForm()
     return render(request, 'course_management/lecturer_form.html', {'form': form, 'is_edit': False})
+
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
@@ -448,6 +451,7 @@ def lecturer_edit(request, pk):
     else:
         form = LecturerForm(instance=lecturer)
     return render(request, 'course_management/lecturer_form.html', {'form': form, 'is_edit': True})
+
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
