@@ -33,7 +33,7 @@ yet covered the Django Web and Front-end modules in Softuni.
 - Test users :
   - normal user (limited access) Sees most of the app except the Admin Panel 
     - username : normaluser
-    - password : normie123
+    - password : normie23
 
   - Moderator:  (limited access) Can access the app and modify lecturers, courses and users 
     - username : peter
@@ -41,7 +41,7 @@ yet covered the Django Web and Front-end modules in Softuni.
 
   - admin user (full access)  Has full admin rights and can access django admin panel 
     - username : admin
-    - password : Admin123123
+    - password : admin123123
    
       
 - Access the admin panel at `https://project-k-web.onrender.com/admin/`
