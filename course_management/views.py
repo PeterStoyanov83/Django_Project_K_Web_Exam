@@ -6,6 +6,7 @@ from .models import Course, CourseSchedule, Room, CourseApplication, TimeSlot, B
 from .forms import CourseForm, CourseScheduleForm, BookingForm, UserForm
 from django.contrib.admin.views.decorators import staff_member_required
 from django.forms import inlineformset_factory
+from django.http import HttpResponseForbidden
 
 
 def course_list(request):
@@ -299,9 +300,7 @@ def admin_lecturers(request):
 
 @user_passes_test(lambda u: u.is_staff)
 def lecturer_create(request):
-    # Placeholder view for creating a new lecturer
     if request.method == 'POST':
-        # Process form data here
         messages.success(request, 'Lecturer created successfully.')
         return redirect('course_management:admin_lecturers')
     return render(request, 'course_management/lecturer_form.html')
@@ -309,10 +308,8 @@ def lecturer_create(request):
 
 @user_passes_test(lambda u: u.is_staff)
 def lecturer_edit(request, pk):
-    # Placeholder view for editing a lecturer
     lecturer = CustomUser.objects.get(pk=pk)
     if request.method == 'POST':
-        # Process form data here
         messages.success(request, 'Lecturer updated successfully.')
         return redirect('course_management:admin_lecturers')
     context = {
@@ -321,14 +318,11 @@ def lecturer_edit(request, pk):
     return render(request, 'course_management/lecturer_form.html', context)
 
 
+@login_required
 @user_passes_test(lambda u: u.is_staff)
 def admin_users(request):
     users = CustomUser.objects.all()
-    context = {
-        'users': users,
-    }
-    return render(request, 'course_management/admin_users.html', context)
-
+    return render(request, 'course_management/admin_users.html', {'users': users})
 
 @user_passes_test(lambda u: u.is_staff)
 def user_create(request):
@@ -351,6 +345,10 @@ def user_create(request):
 @user_passes_test(lambda u: u.is_staff)
 def user_edit(request, pk):
     user = get_object_or_404(CustomUser, pk=pk)
+
+    if user.is_superuser and not request.user.is_superuser:
+        return HttpResponseForbidden("You do not have permission to edit a superuser.")
+
     if request.method == 'POST':
         form = UserForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
@@ -366,3 +364,18 @@ def user_edit(request, pk):
         'user': user,
     }
     return render(request, 'course_management/user_form.html', context)
+
+@user_passes_test(lambda u: u.is_staff)
+def delete_user(request, pk):
+    user = get_object_or_404(CustomUser, pk=pk)
+
+    if user.is_superuser and not request.user.is_superuser:
+        return HttpResponseForbidden("You do not have permission to delete a superuser.")
+
+    if user == request.user:
+        return HttpResponseForbidden("We Don't Support Suicide Here.")
+
+    user.delete()
+    messages.success(request, f'User {user.username} deleted successfully.')
+    return redirect('course_management:admin_users')
+
