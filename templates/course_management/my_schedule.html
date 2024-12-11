@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}My Schedule{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-6">My Schedule</h1>
+
+  <div class="overflow-x-auto">
+      <table class="min-w-full bg-white">
+          <thead>
+              <tr>
+                  <th class="px-4 py-2 bg-gray-200"></th>
+                  {% for room in rooms %}
+                      <th class="px-4 py-2 bg-gray-200">{{ room.name }}</th>
+                  {% endfor %}
+              </tr>
+          </thead>
+          <tbody>
+              {% for row in schedule_matrix %}
+                  <tr>
+                      <td class="border px-4 py-2 font-semibold">
+                          {{ row.time_slot.get_day_display }}<br>
+                          {{ row.time_slot.start_time|time:"H:i" }} - {{ row.time_slot.end_time|time:"H:i" }}
+                      </td>
+                      {% for room_data in row.rooms %}
+                          <td class="border px-4 py-2">
+                              {% for schedule in room_data.schedules %}
+                                  <div class="bg-blue-100 p-2 mb-2 rounded">
+                                      <p class="font-semibold">{{ schedule.course.title }}</p>
+                                      <p class="text-sm text-gray-600">{{ schedule.get_status_display }}</p>
+                                  </div>
+                              {% endfor %}
+                          </td>
+                      {% endfor %}
+                  </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  </div>
+</div>
+{% endblock %}

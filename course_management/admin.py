@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+
 from .models import Room, TimeSlot, Course, CourseSchedule, Booking, Lecturer
 
 
@@ -38,3 +39,6 @@ class LecturerAdmin(admin.ModelAdmin):
     list_display = ('name', 'bio')
     search_fields = ('name',)
     filter_horizontal = ('courses',)
+
+
+

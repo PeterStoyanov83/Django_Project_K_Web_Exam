@@ -22,7 +22,7 @@ def schedule(request):
     rooms = Room.objects.all()
     time_slots = TimeSlot.objects.all().order_by('day', 'start_time')
 
-    # Restructure the schedule data
+    # Build the schedule matrix
     schedule_matrix = []
     for time_slot in time_slots:
         row = {
@@ -30,10 +30,7 @@ def schedule(request):
             'rooms': []
         }
         for room in rooms:
-            room_schedules = [
-                schedule for schedule in schedules
-                if schedule.room_id == room.id and schedule.time_slot_id == time_slot.id
-            ]
+            room_schedules = schedules.filter(room=room, time_slot=time_slot)
             row['rooms'].append({
                 'room': room,
                 'schedules': room_schedules
@@ -45,6 +42,37 @@ def schedule(request):
         'schedule_matrix': schedule_matrix,
     }
     return render(request, 'course_management/schedule.html', context)
+
+@login_required
+def my_schedule(request):
+    # Filter bookings or applications for the logged-in user
+    user_courses = CourseApplication.objects.filter(user=request.user, status='approved').select_related('course')
+    user_schedules = CourseSchedule.objects.filter(course__in=[app.course for app in user_courses]).select_related('room', 'time_slot')
+
+    # Organize schedules by time slots and rooms
+    rooms = Room.objects.all()
+    time_slots = TimeSlot.objects.all().order_by('day', 'start_time')
+
+    schedule_matrix = []
+    for time_slot in time_slots:
+        row = {
+            'time_slot': time_slot,
+            'rooms': []
+        }
+        for room in rooms:
+            room_schedules = user_schedules.filter(room=room, time_slot=time_slot)
+            row['rooms'].append({
+                'room': room,
+                'schedules': room_schedules
+            })
+        schedule_matrix.append(row)
+
+    context = {
+        'schedule_matrix': schedule_matrix,
+        'rooms': rooms,
+    }
+    return render(request, 'course_management/my_schedule.html', context)
+
 
 
 @login_required
