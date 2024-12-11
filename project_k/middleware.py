@@ -10,7 +10,6 @@ class AuthRequiredMiddleware:
         response = self.get_response(request)
 
         if response.status_code == 302 and not request.user.is_authenticated:
-            # Check if the redirect is to a page that requires authentication
             redirect_url = response.url
             if any(url in redirect_url for url in ['/profile/', '/course/', '/admin/']):
                 messages.error(request, "Not allowed! Please log in first.")

@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from client_management.models import CustomUser
 from django.utils import timezone
 from schedule.models import Calendar, Event
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 
 
 class Lecturer(models.Model):
@@ -164,11 +164,18 @@ class CourseSchedule(models.Model):
         else:
             print("Invalid time_slot or start_time")
 
-
     def get_event_dates(self):
-        days = [int(day) for day in self.days_of_week.split(',')]
-        date_range = [self.start_date + timezone.timedelta(days=x) for x in range((self.end_date - self.start_date).days + 1)]
-        return [date for date in date_range if date.weekday() in days]
+        if isinstance(self.days_of_week, list):
+            days = [int(day) for day in self.days_of_week]
+        else:
+            days = [int(day) for day in self.days_of_week.split(',')]
+        current_date = self.start_date
+        event_dates = []
+        while current_date <= self.end_date:
+            if current_date.weekday() in days:
+                event_dates.append(current_date)
+            current_date += timedelta(days=1)
+        return event_dates
 
 class CourseApplication(models.Model):
     STATUS_CHOICES = [
