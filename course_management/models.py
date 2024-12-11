@@ -213,3 +213,11 @@ class Booking(models.Model):
         if self.course_schedule and self.course_schedule.course.is_full():
             raise ValidationError(_('This course is full.'))
 
+class Lecturer(models.Model):
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    bio = models.TextField(blank=True, null=True)  # Add this line
+    courses_taught = models.ManyToManyField(Course, related_name='lecturers')
+
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"
