@@ -6,6 +6,15 @@ from django.utils import timezone
 from schedule.models import Calendar, Event
 from datetime import datetime, time
 
+
+class Lecturer(models.Model):
+    name = models.CharField(max_length=255)
+    bio = models.TextField(blank=True, null=True)
+    courses = models.ManyToManyField('Course', related_name='lecturers', blank=True)
+
+    def __str__(self):
+        return self.name
+
 class Course(models.Model):
     title = models.CharField(
         _("Title"),
@@ -13,9 +22,9 @@ class Course(models.Model):
     )
     description = models.TextField(_("Description"))
     lecturer = models.ForeignKey(
-        to=CustomUser,
+        'course_management.Lecturer',
         on_delete=models.CASCADE,
-        related_name='courses_taught',
+        related_name='assigned_courses',  # Changed to prevent clash
         verbose_name=_("Lecturer")
     )
     room = models.ForeignKey(
@@ -213,10 +222,3 @@ class Booking(models.Model):
         if self.course_schedule and self.course_schedule.course.is_full():
             raise ValidationError(_('This course is full.'))
 
-class Lecturer(models.Model):
-    name = models.CharField(max_length=255)
-    bio = models.TextField(blank=True, null=True)
-    courses = models.ManyToManyField('Course', related_name='lecturers', blank=True)
-
-    def __str__(self):
-        return self.name
