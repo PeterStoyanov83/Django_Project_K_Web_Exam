@@ -1,57 +1,48 @@
 {% extends 'base.html' %}
-
-{% block title %}Course Applications - Project K{% endblock %}
+{% block title %}Admin - Course Applications{% endblock %}
 
 {% block content %}
-    <div class="container mx-auto px-4 mb-8">
-        <h1 class="text-3xl font-bold mb-6">Course Applications</h1>
-        <div class="mb-8">
-            <a href="{% url 'course_management:admin_panel' %}"
-               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors">
-                Back
-            </a>
-        </div>
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold mb-4">Pending Course Applications</h1>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
         {% if applications %}
-            <table class="w-full bg-white px-4shadow-md rounded-lg  overflow-hidden">
-                <thead class="bg-gray-200 ">
+            <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+                <thead class="bg-gray-200 text-gray-700 text-left text-sm font-semibold">
                 <tr>
-                    <th class="px-4 py-2">User</th>
-                    <th class="px-4 py-2">Course</th>
-                    <th class="px-4 py-2">Status</th>
-                    <th class="px-4 py-2">Actions</th>
+                    <th class="px-6 py-3">Course</th>
+                    <th class="px-6 py-3">Applicant</th>
+                    <th class="px-6 py-3">Application Date</th>
+                    <th class="px-6 py-3">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for application in applications %}
-                    <tr>
-                        <td class="border px-4 py-2">{{ application.user.username }}</td>
-                        <td class="border px-4 py-2">{{ application.course.title }}</td>
-                        <td class="border px-4 py-2">{{ application.status }}</td>
-                        <td class="border px-4 py-2">
-                            {% if application.status == 'pending' %}
-                                <a href="{% url 'course_management:approve_course_application' application.id %}"
-                                   class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
-                                    Approve
-                                </a>
-                                <a href="{% url 'course_management:reject_course_application' application.id %}"
-                                   class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2">
-                                    Reject
-                                </a>
-                            {% endif %}
+                    <tr class="border-t">
+                        <td class="px-6 py-4">{{ application.course.title }}</td>
+                        <td class="px-6 py-4">{{ application.user.username }}</td>
+                        <td class="px-6 py-4">{{ application.application_date|date:"F j, Y" }}</td>
+                        <td class="px-6 py-4">
+                            <a href="{% url 'course_management:approve_course_application' application.id %}"
+                               class="text-green-600 hover:underline">
+                                Approve
+                            </a> |
+                            <a href="{% url 'course_management:reject_course_application' application.id %}"
+                               class="text-red-600 hover:underline">
+                                Reject
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
         {% else %}
-            <p>No course applications at the moment.</p>
+            <p class="text-gray-600">No pending applications at the moment.</p>
         {% endif %}
-        <div class="mt-8">
-            <a href="{% url 'course_management:admin_panel' %}"
-               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors">
-                Back 
-            </a>
-        </div>
     </div>
 {% endblock %}
-

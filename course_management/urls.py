@@ -8,6 +8,7 @@ urlpatterns = [
     path('', views.course_list, name='course_list'),
     path('schedule/', views.schedule, name='schedule'),
     path('admin-panel/', views.admin_panel, name='admin_panel'),
+    path('apply/<int:course_id>/', views.apply_for_course, name='apply_for_course'),
 
     path('create/', views.course_create, name='course_create'),
     path('<int:pk>/', views.course_detail, name='course_detail'),

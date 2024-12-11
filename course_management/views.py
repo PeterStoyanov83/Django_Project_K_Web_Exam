@@ -142,6 +142,7 @@ def apply_for_course(request, course_id):
     return redirect('course_management:course_detail', pk=course_id)
 
 
+
 @login_required
 def course_delete(request, pk):
     course = get_object_or_404(Course, pk=pk)
