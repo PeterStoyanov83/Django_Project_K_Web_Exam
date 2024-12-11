@@ -85,11 +85,36 @@ class ClientManagementConfig(AppConfig):
 
         # Create Default Courses
         course_data = [
-            {"title": "Artificial Intelligence Fundamentals", "description": "Intro to AI.", "lecturer": lecturer_objects[0]},
-            {"title": "Data Science and Visualization", "description": "Data analysis techniques.", "lecturer": lecturer_objects[1]},
-            {"title": "Advanced Python Programming", "description": "Deep dive into Python.", "lecturer": lecturer_objects[2]},
-            {"title": "Web Development with Django", "description": "Django for scalable apps.", "lecturer": lecturer_objects[3]},
-            {"title": "Introduction to Cybersecurity", "description": "Basics of cybersecurity.", "lecturer": lecturer_objects[4]},
+            {"title": "Artificial Intelligence Fundamentals",
+             "description": "An introduction to AI principles, machine learning techniques, and neural networks.",
+             "lecturer": lecturer_objects[0]},
+            {"title": "Data Science and Visualization",
+             "description": "A practical course on data analysis and visualization techniques.",
+             "lecturer": lecturer_objects[1]},
+            {"title": "Advanced Python Programming",
+             "description": "A deep dive into Python, including advanced algorithms and optimization techniques.",
+             "lecturer": lecturer_objects[2]},
+            {"title": "Web Development with Django",
+             "description": "Comprehensive coverage of Django for building scalable web applications.",
+             "lecturer": lecturer_objects[3]},
+            {"title": "Introduction to Cybersecurity",
+             "description": "Basics of cybersecurity, including threat detection, prevention, and risk assessment.",
+             "lecturer": lecturer_objects[4]},
+            {"title": "Cloud Computing Essentials",
+             "description": "Learn about cloud services, deployment, and security.",
+             "lecturer": lecturer_objects[6]},
+            {"title": "Big Data Analytics",
+             "description": "Explore tools and frameworks for processing and analyzing large datasets.",
+             "lecturer": lecturer_objects[2]},
+            {"title": "Machine Learning for Beginners",
+             "description": "A beginner-friendly course on machine learning algorithms and their applications.",
+             "lecturer": lecturer_objects[0]},
+            {"title": "Software Project Management",
+             "description": "Learn methodologies like Agile and Scrum to manage software projects effectively.",
+             "lecturer": lecturer_objects[8]},
+            {"title": "Blockchain and Cryptocurrency",
+             "description": "Fundamentals of blockchain technology and its use in cryptocurrency.",
+             "lecturer": lecturer_objects[9]},
         ]
         course_objects = []
         for course in course_data:
@@ -106,23 +131,6 @@ class ClientManagementConfig(AppConfig):
                 name=room_name,
                 defaults={"capacity": 30}
             )
-
-        # Create Default Time Slots
-        time_slot_data = [
-            {"start_time": "09:00", "end_time": "11:30"},
-            {"start_time": "12:00", "end_time": "14:00"},
-            {"start_time": "14:00", "end_time": "16:00"},
-            {"start_time": "16:00", "end_time": "19:00"},
-        ]
-        time_slot_objects = []
-        for slot in time_slot_data:
-            time_slot, _ = TimeSlot.objects.get_or_create(
-                start_time=datetime.strptime(slot["start_time"], "%H:%M").time(),
-                end_time=datetime.strptime(slot["end_time"], "%H:%M").time(),
-            )
-            time_slot_objects.append(time_slot)
-
-
 
     def ready(self):
         super_ready = super().ready()
