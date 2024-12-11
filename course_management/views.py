@@ -287,14 +287,11 @@ def admin_courses(request):
     courses = Course.objects.prefetch_related('lecturers').all()
     return render(request, 'course_management/admin_courses.html', {'courses': courses})
 
-
+@login_required
 @user_passes_test(lambda u: u.is_staff)
 def admin_lecturers(request):
-    lecturers = CustomUser.objects.filter(is_staff=True)
-    context = {
-        'lecturers': lecturers,
-    }
-    return render(request, 'course_management/admin_lecturers.html', context)
+    lecturers = Lecturer.objects.all()
+    return render(request, 'course_management/admin_lecturers.html', {'lecturers': lecturers})
 
 
 @user_passes_test(lambda u: u.is_staff)
