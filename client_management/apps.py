@@ -1,6 +1,4 @@
 from django.apps import AppConfig
-
-from django.conf import settings
 from django.db.models.signals import post_migrate
 
 
@@ -11,13 +9,15 @@ class ClientManagementConfig(AppConfig):
 
     @staticmethod
     def create_default_site_profile(sender, **kwargs):
-        """after migrations"""
+        """creating a default superuser after migrations"""
         from client_management.models import CustomUser
 
-
-
         if not CustomUser.objects.filter(username='admin').exists():
-            CustomUser.objects.create_superuser(username='admin', email='admin@admin.ad', password='admin123')
+            CustomUser.objects.create_superuser(
+                username='admin',
+                email='admin@admin.ad',
+                password='admin123'
+            )
 
 
     def ready(self):

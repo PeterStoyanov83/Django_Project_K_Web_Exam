@@ -1,24 +1,24 @@
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import authenticate, logout
 from django.contrib.auth.views import PasswordResetView
-from .forms import CustomUserCreationForm, CustomAuthenticationForm, LaptopForm, ClientForm, \
-    ClientFileForm, UserProfileForm
-from .models import Client, Laptop, ClientFile
+from .forms import CustomUserCreationForm, CustomAuthenticationForm, LaptopForm, ClientFileForm, UserProfileForm, \
+    ClientForm
+from .models import Laptop, ClientFile
 from course_management.models import Course, CourseApplication, CourseSchedule
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
 
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.contrib.auth import login
-from django.contrib import messages
 from .models import Client
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 
 @login_required
 def profile(request):
-    # Get all files uploaded by the user
     user_files = ClientFile.objects.filter(user=request.user).order_by('-uploaded_at')
     context = {
         'user': request.user,
@@ -31,9 +31,13 @@ def profile(request):
 @login_required
 def profile_edit(request):
     if request.method == 'POST':
-        user_form = UserProfileForm(request.POST, request.FILES, instance=request.user)
-        client_form = ClientForm(request.POST, instance=request.user.client_profile) if hasattr(request.user,
-                                                                                                'client_profile') else None
+        user_form = UserProfileForm(
+            request.POST,
+            request.FILES,
+            instance=request.user
+        )
+        client_form = ClientForm(request.POST, instance=request.user.client_profile) \
+            if hasattr(request.user, 'client_profile') else None
         file_form = ClientFileForm(request.POST, request.FILES)
 
         if user_form.is_valid() and (not client_form or client_form.is_valid()) and file_form.is_valid():
@@ -54,8 +58,8 @@ def profile_edit(request):
             messages.error(request, 'Please correct the errors below.')
     else:
         user_form = UserProfileForm(instance=request.user)
-        client_form = ClientForm(instance=request.user.client_profile) if hasattr(request.user,
-                                                                                  'client_profile') else None
+        client_form = ClientForm(instance=request.user.client_profile) \
+            if hasattr(request.user, 'client_profile') else None
         file_form = ClientFileForm()
 
     context = {
@@ -69,11 +73,14 @@ def profile_edit(request):
 @login_required
 def delete_file(request, file_id):
     try:
-        file = ClientFile.objects.get(id=file_id, user=request.user)
-        file.delete()
-        messages.success(request, 'File deleted successfully.')
-    except ClientFile.DoesNotExist:
-        messages.error(request, 'File not found.')
+        client = request.user.client_profile
+    except Client.DoesNotExist:
+        raise Http404("Client not found.")
+
+
+    file = get_object_or_404(ClientFile, id=file_id, user=request.user)
+    file.delete()
+    messages.success(request, 'File deleted successfully.')
     return redirect('client_management:profile')
 
 
@@ -83,7 +90,7 @@ def upload_file(request):
         form = ClientFileForm(request.POST, request.FILES)
         if form.is_valid():
             client_file = form.save(commit=False)
-            client_file.client = request.user.client
+            client_file.client = request.user.client_profile
             client_file.save()
             messages.success(request, 'File uploaded successfully.')
             return HttpResponseRedirect(reverse('client_management:profile'))
@@ -92,7 +99,7 @@ def upload_file(request):
 
 @login_required
 def laptop_list(request):
-    laptops = Laptop.objects.filter(client=request.user.client)
+    laptops = Laptop.objects.filter(client=request.user.client_profile)
     return render(request, 'client_management/laptop_list.html', {'laptops': laptops})
 
 
@@ -144,18 +151,26 @@ def laptop_create(request):
         form = LaptopForm(request.POST)
         if form.is_valid():
             laptop = form.save(commit=False)
-            laptop.client = request.user.client
+            laptop.client = request.user.client_profile
             laptop.save()
             messages.success(request, 'Laptop created successfully.')
             return redirect('client_management:laptop_list')
     else:
         form = LaptopForm()
-    return render(request, 'client_management/laptop_form.html', {'form': form, 'action': 'Create'})
+    return render(
+        request,
+        'client_management/laptop_form.html',
+        {'form': form, 'action': 'Create'}
+    )
 
 
 @login_required
 def laptop_update(request, pk):
-    laptop = get_object_or_404(Laptop, pk=pk, client=request.user.client)
+    laptop = get_object_or_404(
+        Laptop,
+        pk=pk,
+        client=request.user.client
+    )
     if request.method == 'POST':
         form = LaptopForm(request.POST, instance=laptop)
         if form.is_valid():
@@ -164,17 +179,32 @@ def laptop_update(request, pk):
             return redirect('client_management:laptop_list')
     else:
         form = LaptopForm(instance=laptop)
-    return render(request, 'client_management/laptop_form.html', {'form': form, 'action': 'Update'})
+    return render(
+        request,
+        'client_management/laptop_form.html',
+        {'form': form, 'action': 'Update'}
+    )
 
 
 @login_required
 def laptop_delete(request, pk):
-    laptop = get_object_or_404(Laptop, pk=pk, client=request.user.client)
+    laptop = get_object_or_404(
+        Laptop,
+        pk=pk,
+        client=request.user.client
+    )
     if request.method == 'POST':
         laptop.delete()
-        messages.success(request, 'Laptop deleted successfully.')
+        messages.success(
+            request,
+            'Laptop deleted successfully.'
+        )
         return redirect('client_management:laptop_list')
-    return render(request, 'client_management/laptop_confirm_delete.html', {'laptop': laptop})
+    return render(
+        request,
+        'client_management/laptop_confirm_delete.html',
+        {'laptop': laptop}
+    )
 
 
 @login_required
@@ -183,7 +213,7 @@ def upload_file(request):
         form = ClientFileForm(request.POST, request.FILES)
         if form.is_valid():
             client_file = form.save(commit=False)
-            client_file.client = request.user.client
+            client_file.client = request.user.client_profile
             client_file.save()
             messages.success(request, 'File uploaded successfully.')
     return redirect('client_management:profile')
@@ -191,7 +221,11 @@ def upload_file(request):
 
 @login_required
 def delete_file(request, file_id):
-    file = get_object_or_404(ClientFile, id=file_id, client=request.user.client)
+    file = get_object_or_404(
+        ClientFile,
+        id=file_id,
+        client=request.user.client
+    )
     file.delete()
     messages.success(request, 'File deleted successfully.')
     return redirect('client_management:profile')
@@ -201,13 +235,21 @@ def delete_file(request, file_id):
 def apply_for_course(request):
     if request.method == 'POST':
         course_id = request.POST.get('course')
-        course = get_object_or_404(Course, id=course_id)
-        CourseApplication.objects.create(user=request.user, course=course)
+        course = get_object_or_404(
+            Course,
+            id=course_id
+        )
+        CourseApplication.objects.create(
+            user=request.user,
+            course=course
+        )
         messages.success(request, 'Course application submitted successfully.')
         return redirect('client_management:profile')
     courses = Course.objects.all()
-    return render(request, '../client_management/templates/client_management/apply_for_course.html',
-                  {'courses': courses})
+    return render(
+        request,
+        '../client_management/templates/client_management/apply_for_course.html',
+        {'courses': courses})
 
 
 @login_required

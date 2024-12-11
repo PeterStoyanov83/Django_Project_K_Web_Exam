@@ -80,8 +80,11 @@ def course_create(request):
 @user_passes_test(lambda u: u.is_staff)
 def course_update(request, pk):
     course = get_object_or_404(Course, pk=pk)
-    CourseScheduleFormSet = inlineformset_factory(Course, CourseSchedule, form=CourseScheduleForm, extra=1,
-                                                  can_delete=True)
+    CourseScheduleFormSet = inlineformset_factory(
+        Course, CourseSchedule,
+        form=CourseScheduleForm,
+        extra=1,
+        can_delete=True)
     if request.method == 'POST':
         form = CourseForm(request.POST, instance=course)
         schedule_formset = CourseScheduleFormSet(request.POST, instance=course)
@@ -93,8 +96,10 @@ def course_update(request, pk):
     else:
         form = CourseForm(instance=course)
         schedule_formset = CourseScheduleFormSet(instance=course)
-    return render(request, 'course_management/course_form.html',
-                  {'form': form, 'schedule_formset': schedule_formset, 'course': course})
+    return render(
+        request,
+        'course_management/course_form.html',
+        {'form': form, 'schedule_formset': schedule_formset, 'course': course})
 
 
 @staff_member_required
@@ -213,7 +218,9 @@ def booking_cancel(request, pk):
         booking.save()
         messages.success(request, 'Booking cancelled successfully.')
         return redirect('course_management:booking_list')
-    return render(request, 'course_management/booking_confirm_cancel.html', {'booking': booking})
+    return render(
+        request,
+        'course_management/booking_confirm_cancel.html', {'booking': booking})
 
 
 @login_required
@@ -223,7 +230,10 @@ def admin_course_applications(request):
         return redirect('course_management:course_list')
 
     applications = CourseApplication.objects.filter(status='pending').order_by('-application_date')
-    return render(request, 'course_management/admin_course_applications.html', {'applications': applications})
+    return render(
+        request,
+        'course_management/admin_course_applications.html',  {'applications': applications}
+    )
 
 
 @login_required
@@ -246,7 +256,9 @@ def approve_course_application(request, application_id):
 @login_required
 def reject_course_application(request, application_id):
     if not request.user.is_staff:
-        messages.error(request, "You don't have permission to perform this action.")
+        messages.error(
+            request,
+            "You don't have permission to perform this action.")
         return redirect('course_management:course_list')
 
     application = get_object_or_404(CourseApplication, pk=application_id)

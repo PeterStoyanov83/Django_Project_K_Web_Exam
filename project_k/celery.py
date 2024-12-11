@@ -7,7 +7,9 @@ app = Celery('project_k')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
-app.conf.broker_url = os.environ.get('CELERY_BROKER_URL', 'amqp://guest:guest@localhost:5672//')
-app.conf.result_backend = os.environ.get('CELERY_RESULT_BACKEND', 'rpc://')
+# Use Redis as the broker and result backend
+app.conf.broker_url = os.environ.get('CELERY_BROKER_URL', 'django://')
+app.conf.result_backend = os.environ.get('CELERY_RESULT_BACKEND', 'django-db')
 
-CELERY_BROKER_URL = 'pyamqp://guest@localhost//'
+# Retry connection on startup
+app.conf.broker_connection_retry_on_startup = True

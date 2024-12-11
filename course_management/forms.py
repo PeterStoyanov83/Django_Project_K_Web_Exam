@@ -8,7 +8,13 @@ from django.core.exceptions import ValidationError
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
-        fields = ['title', 'description', 'lecturer', 'room', 'capacity']
+        fields = [
+            'title',
+            'description',
+            'lecturer',
+            'room',
+            'capacity'
+        ]
 
     def clean_title(self):
         title = self.cleaned_data.get('title')
@@ -40,7 +46,15 @@ class CourseScheduleForm(forms.ModelForm):
 
     class Meta:
         model = CourseSchedule
-        fields = ['course', 'room', 'time_slot', 'start_date', 'end_date', 'days_of_week', 'status']
+        fields = [
+            'course',
+            'room',
+            'time_slot',
+            'start_date',
+            'end_date',
+            'days_of_week',
+            'status'
+        ]
         widgets = {
             'start_date': forms.DateInput(attrs={'type': 'date'}),
             'end_date': forms.DateInput(attrs={'type': 'date'}),
@@ -78,8 +92,18 @@ class UserForm(forms.ModelForm):
 
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'password', 'confirm_password', 'first_name', 'last_name', 'phone_number',
-                  'user_type', 'date_of_birth', 'address']
+        fields = [
+            'username',
+            'email',
+            'password',
+            'confirm_password',
+            'first_name',
+            'last_name',
+            'phone_number',
+            'user_type',
+            'date_of_birth',
+            'address'
+        ]
         widgets = {
             'password': forms.PasswordInput(),
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),

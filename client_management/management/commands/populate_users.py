@@ -22,22 +22,24 @@ class Command(BaseCommand):
             username = fake.user_name()
             email = fake.email()
             password = fake.password()
-            user = User.objects.create_user(username=username, email=email, password=password)
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password
+            )
 
-            # Create Client
             client = Client.objects.create(
                 name=fake.name(),
                 location=fake.city(),
                 agreement_status=random.choice([True, False])
             )
 
-            # Create ClientFile
+
             ClientFile.objects.create(
                 client=client,
                 file=f'client_files/{fake.file_name()}'
             )
 
-            # Create Laptop (50% chance)
             if random.choice([True, False]):
                 Laptop.objects.create(
                     identifier=f'LAP-{fake.unique.random_number(digits=5)}',
@@ -46,7 +48,6 @@ class Command(BaseCommand):
                     return_date=fake.date_this_year(after_today=True)
                 )
 
-            # Create Course and associate with Client
             course = Course.objects.create(
                 name=fake.catch_phrase(),
                 description=fake.paragraph(),
@@ -54,14 +55,12 @@ class Command(BaseCommand):
             )
             course.clients.add(client)
 
-            # Create CourseSchedule
             CourseSchedule.objects.create(
                 course=course,
                 day_of_week=random.choice(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']),
                 time_slot=fake.time()
             )
 
-            # Create Resource
             Resource.objects.create(
                 course=course,
                 client=client,

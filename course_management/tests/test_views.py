@@ -16,7 +16,11 @@ class CourseManagementViewsTests(TestCase):
         self.staff_user = User.objects.create_user(username='staffuser', password='12345', is_staff=True)
         self.normal_user = User.objects.create_user(username='normaluser', password='12345')
         self.room = Room.objects.create(name='Test Room', capacity=30)
-        self.time_slot = TimeSlot.objects.create(day='MON', start_time=time(9, 0), end_time=time(11, 0))
+        self.time_slot = TimeSlot.objects.create(
+            day='MON',
+            start_time=time(9, 0),
+            end_time=time(11, 0)
+        )
         self.course = Course.objects.create(
             title='Test Course',
             description='This is a test course',

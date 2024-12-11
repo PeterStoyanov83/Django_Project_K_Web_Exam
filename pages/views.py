@@ -1,5 +1,4 @@
 from django.contrib.auth.decorators import login_required
-
 from django.core.mail import send_mail, BadHeaderError
 from django.core.validators import validate_email
 from django.shortcuts import render, redirect
@@ -12,7 +11,6 @@ from django.http import JsonResponse
 from .tasks import send_contact_email
 import logging
 from celery.exceptions import OperationalError
-
 from django.utils.html import strip_tags
 
 from course_management.models import Course

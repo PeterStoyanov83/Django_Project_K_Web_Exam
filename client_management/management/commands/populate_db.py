@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from django.db import transaction
-from django.contrib.auth import get_user_model
 from faker import Faker
 from client_management.models import CustomUser, Client
 from course_management.models import Course, CourseSchedule, Room, TimeSlot, CourseApplication, Booking
@@ -77,7 +76,10 @@ class Command(BaseCommand):
                 last_name=fake.last_name(),
                 phone_number=fake.phone_number()[:15],
                 address=fake.address(),
-                date_of_birth=fake.date_of_birth(minimum_age=18, maximum_age=80)
+                date_of_birth=fake.date_of_birth(
+                    minimum_age=18,
+                    maximum_age=80
+                )
             )
 
             if i < 20:  # First 20 users are clients
@@ -109,9 +111,10 @@ class Command(BaseCommand):
                 description=fake.paragraph(),
                 lecturer=lecturer,
                 room=room,
-                capacity=random.randint(10, min(room.capacity, max_room_capacity))
+                capacity=random.randint(
+                    10,
+                    min(room.capacity, max_room_capacity))
             )
-            # Ensure the calendar is created with a unique slug
             if not course.calendar:
                 from schedule.models import Calendar
                 slug = f"course-{course.id}-calendar"

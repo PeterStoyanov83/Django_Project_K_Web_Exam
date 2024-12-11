@@ -87,60 +87,80 @@ class FileUploadTests(TestCase):
         )
         response = self.client.post(self.upload_url, {'file': file_data})
 
-        # Check redirect after successful upload
         self.assertEqual(response.status_code, 302)
 
-        # Check file exists in the database
         self.assertTrue(ClientFile.objects.filter(client=self.client_profile).exists())
 
     def test_invalid_file_upload(self):
-        file_data = SimpleUploadedFile("test.exe", b"Invalid file", content_type="application/x-msdownload")
+        file_data = SimpleUploadedFile(
+            "test.exe",
+            b"Invalid file",
+            content_type="application/x-msdownload"
+        )
         response = self.client.post(self.upload_url, {'file': file_data})
 
-        # Expect a redirect if invalid files are handled via redirects
         self.assertEqual(response.status_code, 302)
 
-        # Ensure no file was saved
         self.assertTrue(ClientFile.objects.filter(client=self.client_profile).exists())
 
     def test_unauthorized_file_upload(self):
-        self.client.logout()  # Ensure the user is logged out
-        file_data = SimpleUploadedFile("test.txt", b"Hello, world!", content_type="text/plain")
+        self.client.logout()
+        file_data = SimpleUploadedFile(
+            "test.txt",
+            b"Hello, world!",
+            content_type="text/plain"
+        )
         response = self.client.post(self.upload_url, {'file': file_data})
 
-        # Assert 403 Forbidden
         self.assertEqual(response.status_code, 403)
 
     def test_valid_file_upload(self):
-        file_data = SimpleUploadedFile("valid.txt", b"Hello, world!", content_type="text/plain")
+        file_data = SimpleUploadedFile(
+            "valid.txt",
+            b"Hello, world!",
+            content_type="text/plain"
+        )
         response = self.client.post(self.upload_url, {"file": file_data})
 
-        # Check successful upload
         self.assertEqual(response.status_code, 302)
         self.assertFalse(ClientFile.objects.filter(file="client_files/valid.txt").exists())
 
     def test_file_deletion_authorized(self):
-        client_file = ClientFile.objects.create(client=self.client_profile, file="client_files/test.txt")
-        delete_url = reverse("client_management:delete_file", args=[client_file.id])
+        client_file = ClientFile.objects.create(
+            client=self.client_profile,
+            file="client_files/test.txt"
+        )
+        delete_url = reverse(
+            "client_management:delete_file",
+            args=[client_file.id]
+        )
         response = self.client.post(delete_url)
         self.assertEqual(response.status_code, 302)
         self.assertFalse(ClientFile.objects.filter(id=client_file.id).exists())
 
     def test_file_deletion_unauthorized(self):
-        # Create another user and their client profile
         other_user = CustomUser.objects.create_user(
-            username="otheruser", password="password123", email="other@example.com"
+            username="otheruser",
+            password="password123",
+            email="other@example.com"
         )
-        other_client = Client.objects.create(user=other_user, company_name="Other Company", industry="Finance")
+        other_client = Client.objects.create(
+            user=other_user,
+            company_name="Other Company",
+            industry="Finance"
+        )
 
-        # Create a file for the other client
-        client_file = ClientFile.objects.create(client=other_client, file="client_files/test.txt")
+        client_file = ClientFile.objects.create(
+            client=other_client,
+            file="client_files/test.txt"
+        )
 
-        # Attempt to delete the file as the logged-in user (unauthorized)
-        delete_url = reverse("client_management:delete_file", args=[client_file.id])
+        delete_url = reverse(
+            "client_management:delete_file",
+            args=[client_file.id]
+        )
         response = self.client.post(delete_url)
 
-        # Ensure the response is forbidden
         self.assertEqual(response.status_code, 404)
         self.assertTrue(ClientFile.objects.filter(id=client_file.id).exists())
 

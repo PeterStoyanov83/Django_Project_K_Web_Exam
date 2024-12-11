@@ -7,12 +7,34 @@ from schedule.models import Calendar, Event
 from datetime import datetime, time
 
 class Course(models.Model):
-    title = models.CharField(_("Title"), max_length=200)
+    title = models.CharField(
+        _("Title"),
+        max_length=200
+    )
     description = models.TextField(_("Description"))
-    lecturer = models.ForeignKey(to=CustomUser, on_delete=models.CASCADE, related_name='courses_taught', verbose_name=_("Lecturer"))
-    room = models.ForeignKey('Room', on_delete=models.SET_NULL, null=True, blank=True, related_name='courses')
-    calendar = models.OneToOneField(to=Calendar, on_delete=models.SET_NULL, null=True, blank=True)
-    capacity = models.PositiveIntegerField(_("Capacity"), default=20)
+    lecturer = models.ForeignKey(
+        to=CustomUser,
+        on_delete=models.CASCADE,
+        related_name='courses_taught',
+        verbose_name=_("Lecturer")
+    )
+    room = models.ForeignKey(
+        to='Room',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='courses'
+    )
+    calendar = models.OneToOneField(
+        to=Calendar,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    capacity = models.PositiveIntegerField(
+        _("Capacity"),
+        default=20
+    )
 
     class Meta:
         verbose_name = _("Course")
@@ -55,7 +77,11 @@ class TimeSlot(models.Model):
         ('SAT', _('Saturday')),
         ('SUN', _('Sunday')),
     ]
-    day = models.CharField(_("Day"), max_length=3, choices=DAY_CHOICES)
+    day = models.CharField(
+        _("Day"),
+        max_length=3,
+        choices=DAY_CHOICES
+    )
     start_time = models.TimeField(_("Start Time"))
     end_time = models.TimeField(_("End Time"))
 
@@ -141,10 +167,25 @@ class CourseApplication(models.Model):
         ('approved', _('Approved')),
         ('rejected', _('Rejected')),
     ]
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='course_applications')
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='applications')
-    status = models.CharField(_("Status"), max_length=20, choices=STATUS_CHOICES, default='pending')
-    application_date = models.DateTimeField(_("Application Date"), default=timezone.now)
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='course_applications')
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='applications'
+    )
+    status = models.CharField(
+        _("Status"),
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending'
+    )
+    application_date = models.DateTimeField(
+        _("Application Date"),
+        default=timezone.now
+    )
 
     def __str__(self):
         return f"{self.user.username} - {self.course.title} ({self.get_status_display()})"

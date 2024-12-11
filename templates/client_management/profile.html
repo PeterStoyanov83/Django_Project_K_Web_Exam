@@ -37,10 +37,6 @@
                            class="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors">
                             Edit Profile
                         </a>
-                        <a href="{% url 'client_management:my_schedule' %}" 
-                           class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
-                            My Schedule
-                        </a>
                     </div>
                 </div>
             </div>
@@ -88,9 +84,9 @@
                 <!-- Uploaded Files Section -->
                 <div class="mt-8">
                     <h2 class="text-xl font-semibold mb-4">Uploaded Files</h2>
-                    {% if user.files.all %}
+                    {% if user_files %}
                         <ul class="space-y-3">
-                            {% for file in user.files.all %}
+                            {% for file in user_files %}
                                 <li class="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
                                     <div class="flex items-center space-x-3">
                                         <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -8,8 +8,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -17,9 +15,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(int(os.getenv('DJANGO_DEBUG','0')))
+DEBUG = bool(int(os.getenv('DJANGO_DEBUG', '0')))
 
-ALLOWED_HOSTS = ['project-k-web.onrender.com','localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['project-k-web.onrender.com', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
@@ -35,6 +33,8 @@ INSTALLED_APPS = [
     'schedule',
     'anymail',
     'django_extensions',
+    'django_celery_results',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -132,6 +132,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 CONTACT_EMAIL = os.getenv('CONTACT_EMAIL', 'default@example.com')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
@@ -164,7 +165,6 @@ SECURE_HSTS_PRELOAD = True
 LOG_DIR = os.path.join(BASE_DIR, 'logs')
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
-
 
 # Logging Configuration
 LOGGING = {

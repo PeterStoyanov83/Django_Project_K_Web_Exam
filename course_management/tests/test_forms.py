@@ -42,7 +42,11 @@ class CourseScheduleFormTest(TestCase):
             room=self.room,
             capacity=20
         )
-        self.time_slot = TimeSlot.objects.create(day='MON', start_time=time(9, 0), end_time=time(11, 0))
+        self.time_slot = TimeSlot.objects.create(
+            day='MON',
+            start_time=time(9, 0),
+            end_time=time(11, 0)
+        )
 
     def test_course_schedule_form_valid_data(self):
         start_date = timezone.now().date()
@@ -102,7 +106,11 @@ class BookingFormTest(TestCase):
             room=self.room,
             capacity=20
         )
-        self.time_slot = TimeSlot.objects.create(day='MON', start_time=time(9, 0), end_time=time(11, 0))
+        self.time_slot = TimeSlot.objects.create(
+            day='MON',
+            start_time=time(9, 0),
+            end_time=time(11, 0)
+        )
         self.schedule = CourseSchedule.objects.create(
             course=self.course,
             room=self.room,
