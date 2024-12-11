@@ -11,7 +11,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.contrib.auth import login
 from .models import Client
-
+from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -72,13 +72,14 @@ def profile_edit(request):
 
 @login_required
 def delete_file(request, file_id):
-    try:
-        client = request.user.client_profile
-    except Client.DoesNotExist:
-        raise Http404("Client not found.")
+    # Ensure the user has a client profile
+    if hasattr(request.user, 'client_profile'):
+        return HttpResponseForbidden("You do not have permission to delete this file.")
 
-
+    # Ensure the file belongs to the logged-in user
     file = get_object_or_404(ClientFile, id=file_id, user=request.user)
+
+    # Delete the file
     file.delete()
     messages.success(request, 'File deleted successfully.')
     return redirect('client_management:profile')
@@ -218,17 +219,6 @@ def upload_file(request):
             messages.success(request, 'File uploaded successfully.')
     return redirect('client_management:profile')
 
-
-@login_required
-def delete_file(request, file_id):
-    file = get_object_or_404(
-        ClientFile,
-        id=file_id,
-        client=request.user.client
-    )
-    file.delete()
-    messages.success(request, 'File deleted successfully.')
-    return redirect('client_management:profile')
 
 
 @login_required
