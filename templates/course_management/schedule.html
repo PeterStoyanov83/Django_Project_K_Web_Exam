@@ -1,67 +1,91 @@
 {% extends 'base.html' %}
 
-{% block title %}Schedule - Project K{% endblock %}
+{% block title %}Weekly Schedule - Project K{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <!-- Back to Admin Panel Button -->
-    <div class="mb-6">
-        <a href="{% url 'course_management:admin_panel' %}"
-           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors">
-            Back to Admin Panel
-        </a>
-    </div>
+    <style>
+        .table th, .table td {
+            font-size: 0.85rem; /* Smaller font size */
+            padding: 4px; /* Reduced padding */
+        }
 
-    <!-- Page Title -->
-    <h1 class="text-3xl font-bold mb-6 text-center">Weekly Schedule</h1>
+        .table tr:nth-child(4n) td {
+            border-top: 3px solid #ccc; /* Thicker divider for days */
+        }
 
-    <!-- Schedule Table -->
-    {% if schedule_matrix %}
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white border border-gray-200">
-                <thead>
+        .day-header {
+            background-color: #f5f5f5; /* Shaded background for day headers */
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+    <div class="container mx-auto px-4 py-8">
+        <!-- Back to Admin Panel Button -->
+        <div class="mb-6">
+            <a href="{% url 'course_management:admin_panel' %}"
+               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors">
+                Back to Admin Panel
+            </a>
+        </div>
+
+        <!-- Page Title -->
+        <h1 class="text-3xl font-bold mb-6 text-center">Weekly Schedule</h1>
+
+        <!-- Schedule Table -->
+        {% if schedule_matrix %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border-collapse border border-gray-300">
+                    <thead>
                     <tr>
-                        <!-- Time Slots Column -->
-                        <th class="px-4 py-2 bg-gray-200 text-left">Time Slots</th>
+                        <th class="px-2 py-1 bg-gray-200 text-sm text-left border border-gray-300">Time Slots</th>
                         {% for room in rooms %}
-                            <th class="px-4 py-2 bg-gray-200 text-center">{{ room.name }}</th>
+                            <th class="px-2 py-1 bg-gray-200 text-sm text-center border border-gray-300">{{ room.name }}</th>
                         {% endfor %}
                     </tr>
-                </thead>
-                <tbody>
+                    </thead>
+                    <tbody>
                     {% for row in schedule_matrix %}
+                        {% if forloop.first or not forloop.counter|divisibleby:4 %}
+                            <!-- Day Divider -->
+                            <tr>
+                                <td colspan="{{ rooms|length|add:1 }}"
+                                    class="bg-gray-100 text-center font-bold text-gray-600 py-2 border-t-4 border-gray-400">
+                                    {{ row.time_slot.day|default_if_none:"Day Unknown" }}
+                                </td>
+                            </tr>
+                        {% endif %}
                         <tr>
                             <!-- Time Slot Details -->
-                            <td class="border px-4 py-2 font-semibold text-center">
-                                {{ row.time_slot.day|default_if_none:"Day Unknown" }}<br>
+                            <td class="border px-2 py-1 text-sm text-center">
                                 {{ row.time_slot.start_time|time:"H:i" }} - {{ row.time_slot.end_time|time:"H:i" }}
                             </td>
                             {% for room_data in row.rooms %}
                                 <!-- Room Schedules -->
-                                <td class="border px-4 py-2 text-center">
+                                <td class="border px-2 py-1 text-sm text-center">
                                     {% if room_data.schedules %}
                                         {% for schedule in room_data.schedules %}
-                                            <div class="bg-blue-100 p-2 mb-2 rounded">
-                                                <a href="{% url 'course_management:course_detail' schedule.course.id %}" 
-                                                   class="text-blue-600 hover:text-blue-800">
+                                            <div class="bg-blue-100 p-1 mb-1 rounded">
+                                                <a href="{% url 'course_management:course_detail' schedule.course.id %}"
+                                                   class="text-blue-600 hover:text-blue-800 text-xs">
                                                     {{ schedule.course.title }}
                                                 </a>
-                                                <p class="text-sm text-gray-600">{{ schedule.get_status_display }}</p>
+                                                <p class="text-xs text-gray-600">{{ schedule.get_status_display }}</p>
                                             </div>
                                         {% endfor %}
                                     {% else %}
-                                        <p class="text-gray-500 italic">   </p>
+                                        <p class="text-gray-500 italic text-xs">   </p>
                                     {% endif %}
                                 </td>
                             {% endfor %}
                         </tr>
                     {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% else %}
-        <!-- No Schedule Message -->
-        <p class="text-gray-600 text-center">No schedules available at the moment.</p>
-    {% endif %}
-</div>
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <!-- No Schedule Message -->
+            <p class="text-gray-600 text-center">No schedules available at the moment.</p>
+        {% endif %}
+    </div>
 {% endblock %}
