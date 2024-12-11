@@ -31,15 +31,21 @@ urlpatterns = [
     path('admin/courses/<int:pk>/update/', views.course_update, name='course_update'),
 
     path('admin-course-applications/', views.admin_course_applications, name='admin_course_applications'),
-    path('approve-application/<int:application_id>/', views.approve_course_application, name='approve_course_application'),
+    path('approve-application/<int:application_id>/', views.approve_course_application,
+         name='approve_course_application'),
     path('reject-application/<int:application_id>/', views.reject_course_application, name='reject_course_application'),
 
     path('admin/lecturers/', views.admin_lecturers, name='admin_lecturers'),
-    path('admin/lecturers/create/', views.lecturer_create, name='lecturer_create'),
-    path('admin/lecturers/<int:pk>/edit/', views.lecturer_edit, name='lecturer_edit'),
+    path('admin/lecturers/create/', views.lecturer_create_or_edit, name='lecturer_create'),
+    path('admin/lecturers/<int:pk>/edit/', views.lecturer_create_or_edit, name='lecturer_edit'),
 
     path('admin/users/', views.admin_users, name='admin_users'),
     path('admin/users/create/', views.user_create, name='user_create'),
     path('admin/users/<int:pk>/edit/', views.user_edit, name='user_edit'),
     path('admin/users/<int:pk>/delete/', views.delete_user, name='delete_user'),
+
+    path('admin/lecturers/', views.lecturer_list, name='lecturer_list'),
+    path('admin/lecturers/create/', views.lecturer_create, name='lecturer_create'),
+    path('admin/lecturers/<int:pk>/edit/', views.lecturer_edit, name='lecturer_edit'),
+    path('admin/lecturers/<int:pk>/delete/', views.lecturer_delete, name='lecturer_delete')
 ]

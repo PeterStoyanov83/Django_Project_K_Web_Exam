@@ -10,16 +10,24 @@
         {% for lecturer in lecturers %}
             <div class="bg-white shadow-md rounded-lg p-6 text-center">
                 {% if lecturer.profile_picture %}
-                    <img src="{{ lecturer.profile_picture.url }}" alt="{{ lecturer.get_full_name }}" class="w-24 h-24 rounded-full mx-auto mb-4">
+                    <img src="{{ lecturer.profile_picture.url }}" alt="{{ lecturer.name }}" class="w-24 h-24 rounded-full mx-auto mb-4">
                 {% else %}
                     <div class="w-24 h-24 rounded-full bg-gray-300 mx-auto mb-4"></div>
                 {% endif %}
-                <h2 class="text-xl font-semibold">{{ lecturer.get_full_name }}</h2>
+                <h2 class="text-xl font-semibold">{{ lecturer.name }}</h2>
                 {% if lecturer.bio %}
                     <p class="text-gray-600 mt-2">{{ lecturer.bio|truncatewords:30 }}</p>
                 {% else %}
                     <p class="text-gray-500 mt-2 italic">No bio</p>
                 {% endif %}
+                <p class="text-gray-700 mt-4">
+                    <strong>Courses:</strong>
+                    {% for course in lecturer.courses.all %}
+                        <span>{{ course.title }}</span>{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        <span class="italic text-gray-500">No courses assigned</span>
+                    {% endfor %}
+                </p>
             </div>
         {% empty %}
             <p class="col-span-3 text-center text-gray-600">No lecturers available.</p>

@@ -5,15 +5,23 @@ from client_management.models import CustomUser
 from django.core.exceptions import ValidationError
 
 
+
 class CourseForm(forms.ModelForm):
+    lecturers = forms.ModelMultipleChoiceField(
+        queryset=Lecturer.objects.all(),
+        widget=forms.SelectMultiple(attrs={'class': 'form-control'}),
+        required=False,
+        label="Assign Lecturers"
+    )
+
     class Meta:
         model = Course
         fields = [
             'title',
             'description',
-            'lecturer',
+            'lecturers',
             'room',
-            'capacity'
+            'capacity',
         ]
 
     def clean_title(self):
@@ -27,7 +35,6 @@ class CourseForm(forms.ModelForm):
         if not description or description.strip() == '':
             raise ValidationError('Description cannot be empty or consist only of spaces.')
         return description
-
 
 class CourseScheduleForm(forms.ModelForm):
     days_of_week = forms.MultipleChoiceField(
@@ -120,13 +127,11 @@ class UserForm(forms.ModelForm):
 
 
 class LecturerForm(forms.ModelForm):
-    courses_taught = forms.ModelMultipleChoiceField(
-        queryset=Course.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False,
-        label="Assign Courses"
-    )
-
     class Meta:
         model = Lecturer
-        fields = ['first_name', 'last_name', 'bio', 'courses_taught']
+        fields = ['name','bio', 'courses']
+        widgets = {
+            'bio': forms.Textarea(attrs={'rows': 4}),
+            'courses': forms.SelectMultiple(attrs={'class': 'form-control'}),
+        }
+

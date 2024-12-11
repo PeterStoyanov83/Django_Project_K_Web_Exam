@@ -390,6 +390,65 @@ def delete_user(request, pk):
     return redirect('course_management:admin_users')
 
 
+@login_required
+@user_passes_test(lambda u: u.is_staff)
 def lecturer_list(request):
     lecturers = Lecturer.objects.all()
     return render(request, 'course_management/lecturer_list.html', {'lecturers': lecturers})
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def lecturer_create(request):
+    if request.method == 'POST':
+        form = LecturerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Lecturer created successfully.')
+            return redirect('course_management:lecturer_list')
+    else:
+        form = LecturerForm()
+    return render(request, 'course_management/lecturer_form.html', {'form': form, 'is_edit': False})
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def lecturer_edit(request, pk):
+    lecturer = get_object_or_404(Lecturer, pk=pk)
+    if request.method == 'POST':
+        form = LecturerForm(request.POST, instance=lecturer)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Lecturer updated successfully.')
+            return redirect('course_management:lecturer_list')
+    else:
+        form = LecturerForm(instance=lecturer)
+    return render(request, 'course_management/lecturer_form.html', {'form': form, 'is_edit': True})
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def lecturer_delete(request, pk):
+    lecturer = get_object_or_404(Lecturer, pk=pk)
+    lecturer.delete()
+    messages.success(request, 'Lecturer deleted successfully.')
+    return redirect('course_management:lecturer_list')
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def lecturer_create_or_edit(request, pk=None):
+    if pk:
+        lecturer = get_object_or_404(Lecturer, pk=pk)
+    else:
+        lecturer = None
+
+    if request.method == 'POST':
+        form = LecturerForm(request.POST, request.FILES, instance=lecturer)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Lecturer {'updated' if pk else 'created'} successfully.")
+            return redirect('course_management:admin_lecturers')
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = LecturerForm(instance=lecturer)
+
+    return render(request, 'course_management/lecturer_form.html', {'form': form, 'lecturer': lecturer})

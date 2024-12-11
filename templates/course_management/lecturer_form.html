@@ -16,10 +16,9 @@
 
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
-                    Name
+                    Full Name
                 </label>
-                {{ form.first_name }}
-                {{ form.last_name }}
+                {{ form.name }}
             </div>
 
             <div class="mb-4">
@@ -30,10 +29,17 @@
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="courses_taught">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="profile_picture">
+                    Profile Picture
+                </label>
+                {{ form.profile_picture }}
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="courses">
                     Assign Courses
                 </label>
-                {{ form.courses_taught }}
+                {{ form.courses }}
                 <p class="text-gray-500 text-xs italic mt-1">
                     Hold Ctrl (Windows) or Command (Mac) to select multiple courses.
                 </p>
@@ -52,4 +58,3 @@
         </form>
     </div>
 {% endblock %}
-

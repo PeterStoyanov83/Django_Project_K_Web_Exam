@@ -214,10 +214,9 @@ class Booking(models.Model):
             raise ValidationError(_('This course is full.'))
 
 class Lecturer(models.Model):
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    bio = models.TextField(blank=True, null=True)  # Add this line
-    courses_taught = models.ManyToManyField(Course, related_name='lecturers')
+    name = models.CharField(max_length=255)
+    bio = models.TextField(blank=True, null=True)
+    courses = models.ManyToManyField('Course', related_name='lecturers', blank=True)
 
-    def get_full_name(self):
-        return f"{self.first_name} {self.last_name}"
+    def __str__(self):
+        return self.name

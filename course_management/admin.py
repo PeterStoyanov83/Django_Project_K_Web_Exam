@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Room, TimeSlot, Course, CourseSchedule, Booking
+from .models import Room, TimeSlot, Course, CourseSchedule, Booking, Lecturer
 
 
 @admin.register(Room)
@@ -31,3 +31,10 @@ class BookingAdmin(admin.ModelAdmin):
     list_display = ('user', 'course_schedule', 'booking_date')
     list_filter = ('course_schedule__start_date', 'booking_date')
     search_fields = ('user__username', 'course_schedule__course__title')
+
+
+@admin.register(Lecturer)
+class LecturerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'bio')
+    search_fields = ('name',)
+    filter_horizontal = ('courses',)
