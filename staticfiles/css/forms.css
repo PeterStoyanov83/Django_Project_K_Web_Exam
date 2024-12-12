@@ -7,10 +7,21 @@ input[type="tel"],
 input[type="number"],
 textarea,
 select {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
-    bg-gray-50 hover:bg-white focus:bg-white
+    @apply w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm
+    bg-white focus:bg-white
     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
     transition-colors duration-200;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="date"]:focus,
+input[type="tel"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+    @apply bg-white border-blue-500 ring-blue-500 shadow-md;
 }
 
 input[type="file"] {
@@ -24,11 +35,11 @@ input[type="file"] {
 }
 
 textarea {
-    @apply h-32 resize-y bg-gray-50 hover:bg-white focus:bg-white;
+    @apply h-32 resize-y bg-white focus:bg-white;
 }
 
 select {
-    @apply bg-gray-50 hover:bg-white focus:bg-white;
+    @apply bg-white focus:bg-white;
 }
 
 .error-message {
@@ -40,8 +51,7 @@ select {
 }
 
 .course-title-input {
-    @apply w-full min-w-0 flex-auto appearance-none rounded-md border border-gray-300 bg-white px-3 py-2 text-base leading-6 text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 overflow-visible;
+    @apply w-full min-w-0 flex-auto appearance-none rounded-md border border-black-400 bg-white px-3 py-2 text-base leading-6 text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 overflow-visible;
     max-width: none;
     width: 100%;
 }
-

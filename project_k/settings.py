@@ -33,8 +33,6 @@ INSTALLED_APPS = [
     'schedule',
     'anymail',
     'django_extensions',
-    # 'django_celery_results',
-    # 'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -133,11 +131,6 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 CONTACT_EMAIL = os.getenv('CONTACT_EMAIL', 'default@example.com')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 
 # OpenAI settings
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')

@@ -70,7 +70,6 @@ a:hover {
   background-color: #059669;
 }
 
-/* Forms */
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -78,11 +77,21 @@ textarea,
 select {
   width: 100%;
   padding: 0.5rem;
-  border: 1px solid #d1d5db;
+  border: 2px solid #949494; /* Light gray border for better distinction */
   border-radius: 0.25rem;
   margin-bottom: 1rem;
+  background-color: #dcdcdc; /* Ensure a distinct background color */
 }
 
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--primary-color); /* Highlight with primary color on focus */
+  box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); /* Subtle glow */
+  outline: none; /* Remove default browser outline */
+}
 /* Utility classes */
 .container {
   width: 100%;

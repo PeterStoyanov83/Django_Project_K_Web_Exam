@@ -6,7 +6,6 @@ from .models import Laptop, ClientFile
 from course_management.models import Course, CourseApplication, CourseSchedule
 from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse
-
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.contrib.auth import login
@@ -218,7 +217,6 @@ def upload_file(request):
             client_file.save()
             messages.success(request, 'File uploaded successfully.')
     return redirect('client_management:profile')
-
 
 
 @login_required

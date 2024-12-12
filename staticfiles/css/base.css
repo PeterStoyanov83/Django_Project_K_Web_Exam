@@ -77,10 +77,10 @@ textarea,
 select {
   width: 100%;
   padding: 0.5rem;
-  border: 1px solid #ccc; /* Light gray border for better distinction */
+  border: 2px solid #565656; /* Light gray border for better distinction */
   border-radius: 0.25rem;
   margin-bottom: 1rem;
-  background-color: white; /* Ensure a distinct background color */
+  background-color: #858585; /* Ensure a distinct background color */
 }
 
 input[type="text"]:focus,
