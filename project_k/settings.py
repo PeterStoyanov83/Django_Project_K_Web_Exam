@@ -2,8 +2,6 @@ import os
 import ssl
 from pathlib import Path
 import certifi
-import dj_database_url
-from distro import os_release_attr
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -111,7 +109,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
-    BASE_DIR / "course_management/static"
+
 ]
 
 MEDIA_URL = '/media/'
