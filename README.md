@@ -1,166 +1,84 @@
 # Project K - IT and Business Education Platform
 
-# Deployed at - [https://project-k-web.onrender.com/](https://project-k-web.onrender.com/)
+
+## Deployed at
+[https://project-k-web.onrender.com/](https://project-k-web.onrender.com/)
 
 
-[Test Report - coverage 85%](https://github.com/PeterStoyanov83/Django_Project_K_Web_Exam/blob/main/TestReport.md)
+## Test Access
+- **Normal User**: Limited access.
+  - Username: `normaluser`
+  - Password: `normie23`
+- **Moderator**: Can modify users, lecturers, and courses.
+  - Username: `peter`
+  - Password: `peterko123`
+- **Admin**: Full access to admin panel.
+  - Username: `admin`
+  - Password: `admin123123`
 
+Admin Panel: [https://project-k-web.onrender.com/admin/](https://project-k-web.onrender.com/admin/) (admin login required).
 
-[URL map](https://github.com/PeterStoyanov83/Django_Project_K_Web_Exam/blob/main/URLs.md)
-
-
-[Full DataBase Representation](https://www.mermaidchart.com/raw/3e142088-efce-4272-90d2-f54fcff318f4?theme=light&version=v0.1&format=svg)
+## Additional Resources
+- [Test Report (85% coverage)](https://github.com/PeterStoyanov83/Django_Project_K_Web_Exam/blob/main/TestReport.md)
+- [URL Map](https://github.com/PeterStoyanov83/Django_Project_K_Web_Exam/blob/main/URLs.md)
+- [Database Representation](https://www.mermaidchart.com/raw/3e142088-efce-4272-90d2-f54fcff318f4?theme=light&version=v0.1&format=svg)
 
 
 ## Overview
-
-Project K is a comprehensive IT and business education platform designed to connect students with expert instructors,
-manage course schedules, and facilitate client management. This Django-based web application provides a robust system
-for course management, client interactions, and administrative tasks.
-
-
-The idea started 1 year ago While Peter was enrolled in Keibitz, Basel- an education center for unemployed people 
-living in Switzerland. The IT department needed a tool that combines several custom functionalities that couldn't be 
-found in ready tools therefore Peter offered to start planning and development of such tool. Using his skills and 
-knowledge in Python and Django. Back then Peter wasn't able to complete the full extent of the project since he hadn't 
-yet covered the Django Web and Front-end modules in Softuni. 
-
-
-##  Take A Look Around: 
-
-### log-in with one of these users: 
-
-- Test users :
-  - normal user (limited access) Sees most of the app except the Admin Panel 
-    - username : normaluser
-    - password : normie23
-
-  - Moderator:  (limited access) Can access the app and modify lecturers, courses and users 
-    - username : peter
-    - password : peterko123    
-
-  - admin user (full access)  Has full admin rights and can access django admin panel 
-    - username : admin
-    - password : admin123123
-   
-      
-- Access the admin panel at `https://project-k-web.onrender.com/admin/`
-  (you won't be able to access it if you are not logged in as admin)
-
-- Register as a new user or log in
- 
-- Explore courses, apply for courses, and manage your profile
-- Admins can manage users, courses, and applications through the admin interface
-
+Project K is a Django-based IT and business education platform designed to connect students with expert instructors, manage course schedules, track resources, and facilitate administrative tasks. It features a flexible user system, comprehensive course management, and AI-powered chatbot integration for enhanced user support.
 
 ## Features
 
 ### User Management
+- **Custom User Model**: Extends Django's default user model with fields like phone number, profile picture, user type (private/business), and personal/business information.
+- **Client Model**: Tracks business clients with company-specific details and registration dates.
 
-- User registration with different user types (Private and Business)
-- User authentication and authorization
-- User profile management
-- Password reset functionality
+### File Management
+- **Client File Model**: Enables file upload, storage, and tracking.
+
+### Equipment Tracking
+- **Laptop Model**: Tracks laptops assigned to clients with details like brand, serial number, and status (active, maintenance, retired).
 
 ### Course Management
+- **Lecturer Model**: Represents instructors with detailed profiles and multi-course assignments.
+- **Course Model**: Stores details like title, description, capacity, and associated lecturer, room, and calendar events.
+- **Time Slot Model**: Manages scheduling with start and end times.
+- **Room Model**: Tracks physical/virtual spaces for courses with capacity information.
+- **Course Schedule Model**: Links courses to rooms and times, manages recurring events, and auto-creates calendar events.
 
-- Create, read, update, and delete (CRUD) operations for courses
-- Course scheduling with room assignments
-- View course details and available seats
-- Apply for courses (for clients)
-- Approve or reject course applications (for admins)
-- Interactive course schedule display
+### Booking and Application System
+- **Course Application Model**: Allows course applications and tracks statuses (pending, approved, rejected).
+- **Booking Model**: Ensures valid bookings and prevents scheduling conflicts.
 
-### Client Management
+### Calendar Integration
+- **Calendar and Event Models**: Automatically create and update course sessions.
 
-- Client profile creation and management
-- Distinction between private and business clients
-- File upload and management for clients
-
-### Lecturer Management
-
-- CRUD operations for lecturers
-- Assign lecturers to courses
-- View lecturer details and assigned courses
-
-### Administrative Functions
-
-- Admin panel for managing various aspects of the application
-- User management (admin, staff, clients)
-- Course application review and approval
-- Room management
-- Schedule management (still in development)
-- Generate reports and analytics
-
-### Booking System
-
-- Students can book available courses
-- View and manage bookings
-- Cancel bookings
-
-
-### Resource (Laptop) Management
-
-- Track laptops assigned to clients
-- Manage laptop inventory (add, update, delete)
-
-### User Interface
-
-- Responsive design for various devices
-- Intuitive navigation and user-friendly forms
-- Interactive course schedule display
-- Tailwind CSS for modern and clean UI (still trying to implement this fully )
-
-### Email Notifications
-
-- Send confirmation emails for account creation, password reset, etc. (in development)
-- Course application status notifications
-- Booking confirmations and reminders
-
-### Search and Filter
-
-- Search functionality for courses, users, and other entities
-- Filter options for refined search results
-
-### Security
-
-- Secure authentication system
-- Password hashing and protection
-- CSRF protection
-- Proper permission checks for different user roles
-
-### Additional Features
-
-- AI-powered chatbot assistant (Daisy) for user support
-- Pagination for long lists (e.g., course list, user list)
-- Form validation and error handling
-- Responsive design for mobile and desktop views
+### Key Features
+1. Flexible user system for private and business clients.
+2. Comprehensive course scheduling with room allocation.
+3. Automated calendar integration for seamless management.
+4. Application and booking systems with status tracking.
+5. Equipment tracking for business clients.
+6. File upload and management capabilities.
+7. Capacity and status management for courses, rooms, and schedules.
+8. AI-powered chatbot assistant for user support.
 
 ## Technology Stack
-
 - Django 4.2.3
 - Python 3.8+
 - PostgreSQL
-- HTML5, CSS3, JavaScript
-- Tailwind CSS for styling
-- Django Scheduler for course scheduling
-- Pillow for image processing
-- Docker for containerization of the database
-- OpenAI API for chatbot functionality (talk to Daisy)
+- HTML5, CSS3, JavaScript, Tailwind CSS
+- Docker for database containerization
+- OpenAI API for chatbot (Daisy)
 
 ## Local Setup and Installation
-
-1. Clone the repository
-2. Set up a virtual environment
-3. Install dependencies: `pip install -r requirements.txt`
-4. Set up the PostgreSQL database
-5. Run migrations: `python manage.py migrate`
-6. Create a superuser: `python manage.py createsuperuser`
-7. Run the development server: `python manage.py runserver`
-8. Try data population : `python manage.py populate_db`
-
-
-
-
+1. Clone the repository.
+2. Set up a virtual environment.
+3. Install dependencies: `pip install -r requirements.txt`.
+4. Configure the PostgreSQL database.
+5. Run migrations: `python manage.py migrate`.
+6. Create a superuser: `python manage.py createsuperuser`.
+7. Start the development server: `python manage.py runserver`.
+8. Populate sample data: `python manage.py populate_db`.
 
 
