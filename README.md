@@ -19,7 +19,7 @@
 Admin Panel: [https://project-k-web.onrender.com/admin/](https://project-k-web.onrender.com/admin/) (admin login required).
 
 ## Additional Resources
-- [Test Report (85% coverage)](https://github.com/PeterStoyanov83/Django_Project_K_Web_Exam/blob/main/TestReport.md)
+- [Test Report (85% coverage)](https://github.com/PeterStoyanov83/Django_Project_K_Web_Exam/blob/main/TestReport.md)   (after the last changes 25 out of 72 tests pass.) didn't have the time to work on that.  
 - [URL Map](https://github.com/PeterStoyanov83/Django_Project_K_Web_Exam/blob/main/URLs.md)
 - [Database Representation](https://www.mermaidchart.com/raw/3e142088-efce-4272-90d2-f54fcff318f4?theme=light&version=v0.1&format=svg)
 
