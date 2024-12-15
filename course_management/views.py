@@ -121,14 +121,28 @@ def course_update(request, pk):
     if request.method == 'POST':
         form = CourseForm(request.POST, instance=course)
         schedule_formset = CourseScheduleFormSet(request.POST, instance=course)
+
+        if not form.is_valid():
+            logger.error("Course form errors: %s", form.errors)
+        if not schedule_formset.is_valid():
+            logger.error("Schedule formset errors: %s", schedule_formset.errors)
+
         if form.is_valid() and schedule_formset.is_valid():
-            form.save()
-            schedule_formset.save()
+            course = form.save()  # Save the course first
+            schedules = schedule_formset.save(commit=False)
+            for schedule in schedules:
+                schedule.course = course  # Associate the schedule with the course
+                schedule.save()
+            for obj in schedule_formset.deleted_objects:
+                obj.delete()  # Handle deletions explicitly
             messages.success(request, 'Course updated successfully.')
             return redirect('course_management:course_detail', pk=course.pk)
+
     else:
+        logger.info("Rendering course update form for course: %s", course.pk)
         form = CourseForm(instance=course)
         schedule_formset = CourseScheduleFormSet(instance=course)
+
     return render(
         request,
         'course_management/course_form.html',
